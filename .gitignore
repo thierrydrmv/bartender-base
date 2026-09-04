@@ -1,0 +1,41 @@
+# Ambiente virtual
+env/
+venv/
+.venv/
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+cache
+# Banco de dados local
+db.sqlite3
+db.sqlite3-journal
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Arquivos do macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Testes e cobertura
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# Arquivos enviados pelos usuários
+media/
+
+# Ruff
+.ruff_cache/

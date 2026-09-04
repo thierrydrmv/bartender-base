@@ -1,0 +1,28 @@
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+exclude = [
+    ".venv",
+    "migrations",
+    "theme/static_src/node_modules",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # Erros de estilo
+    "F",   # Erros do Pyflakes
+    "I",   # Organização de imports
+    "B",   # Possíveis bugs
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.djlint]
+profile = "django"
+indent = 4
+max_line_length = 100
+format_css = true
+format_js = true
+exclude = ".venv,theme/static_src/node_modules,staticfiles"
