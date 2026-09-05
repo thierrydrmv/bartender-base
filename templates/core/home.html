@@ -1,7 +1,138 @@
 {% extends "base.html" %}
-{% block title %}Início | Bartender Base{% endblock %}
+{% block title %}
+    Bartender Base | Aprenda a profissão
+{% endblock title %}
 {% block content %}
-    <main>
-        <h1 class="text-4xl font-bold">Bartender Base</h1>
-    </main>
-{% endblock %}
+    <section class="relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-orange-900/10">
+        </div>
+        <div class="relative mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
+            <div>
+                <span class="inline-flex rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-400">
+                    Da primeira dose ao atendimento profissional
+                </span>
+                <h1 class="mt-6 max-w-3xl text-5xl font-bold leading-tight tracking-tight sm:text-6xl">
+                    Aprenda a trabalhar
+                    <span class="text-amber-400">atrás do balcão.</span>
+                </h1>
+                <p class="mt-6 max-w-xl text-lg leading-8 text-zinc-400">
+                    Conheça técnicas, ingredientes, equipamentos e receitas essenciais
+                    para desenvolver suas habilidades como bartender.
+                </p>
+                <div class="mt-8 flex flex-col gap-4 sm:flex-row">
+                    <a href="#learning"
+                       class="rounded-xl bg-amber-500 px-6 py-3 text-center font-semibold text-zinc-950 transition hover:bg-amber-400">
+                        Começar a aprender
+                    </a>
+                    <a href="#cocktails"
+                       class="rounded-xl border border-white/15 px-6 py-3 text-center font-semibold transition hover:border-amber-400 hover:text-amber-400">
+                        Explorar drinks
+                    </a>
+                </div>
+            </div>
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
+                <p class="text-sm font-medium text-amber-400">Encontre uma receita</p>
+                <h2 class="mt-2 text-2xl font-semibold">O que você deseja preparar?</h2>
+                <form action="#" method="get" class="mt-6">
+                    <label for="search" class="sr-only">Pesquisar drinks</label>
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <input id="search"
+                               name="q"
+                               type="search"
+                               placeholder="Ex.: caipirinha, gin, limão..."
+                               class="min-w-0 flex-1 rounded-xl border border-white/10 bg-zinc-900 px-4 py-3 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-amber-500">
+                        <button type="submit"
+                                class="rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 transition hover:bg-amber-400">
+                            Buscar
+                        </button>
+                    </div>
+                </form>
+                <div class="mt-6 flex flex-wrap gap-2 text-sm">
+                    <span class="text-zinc-500">Populares:</span>
+                    <a href="#" class="text-zinc-300 hover:text-amber-400">Caipirinha</a>
+                    <a href="#" class="text-zinc-300 hover:text-amber-400">Mojito</a>
+                    <a href="#" class="text-zinc-300 hover:text-amber-400">Negroni</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="learning" class="border-y border-white/10 bg-zinc-900/40 py-20">
+        <div class="mx-auto max-w-7xl px-6">
+            <div class="max-w-2xl">
+                <p class="font-medium text-amber-400">Comece pelos fundamentos</p>
+                <h2 class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+                    Tudo que um bartender precisa aprender
+                </h2>
+                <p class="mt-4 leading-7 text-zinc-400">
+                    Conteúdo organizado para você estudar na ordem certa e aplicar
+                    o conhecimento na prática.
+                </p>
+            </div>
+            <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <article class="rounded-2xl border border-white/10 bg-zinc-950 p-6 transition hover:-translate-y-1 hover:border-amber-500/50">
+                    <span class="text-3xl">🍹</span>
+                    <h3 class="mt-5 text-xl font-semibold">Drinks</h3>
+                    <p class="mt-3 text-sm leading-6 text-zinc-400">
+                        Receitas, proporções, guarnições e modos de preparo.
+                    </p>
+                    <a href="#cocktails"
+                       class="mt-5 inline-block text-sm font-semibold text-amber-400">
+                        Explorar →
+                    </a>
+                </article>
+                <article id="ingredients"
+                         class="rounded-2xl border border-white/10 bg-zinc-950 p-6 transition hover:-translate-y-1 hover:border-amber-500/50">
+                    <span class="text-3xl">🍋</span>
+                    <h3 class="mt-5 text-xl font-semibold">Ingredientes</h3>
+                    <p class="mt-3 text-sm leading-6 text-zinc-400">
+                        Destilados, licores, xaropes, frutas, ervas e bitters.
+                    </p>
+                    <a href="#"
+                       class="mt-5 inline-block text-sm font-semibold text-amber-400">
+                        Conhecer →
+                    </a>
+                </article>
+                <article id="techniques"
+                         class="rounded-2xl border border-white/10 bg-zinc-950 p-6 transition hover:-translate-y-1 hover:border-amber-500/50">
+                    <span class="text-3xl">🧊</span>
+                    <h3 class="mt-5 text-xl font-semibold">Técnicas</h3>
+                    <p class="mt-3 text-sm leading-6 text-zinc-400">
+                        Aprenda shake, stir, build, muddle e outras técnicas.
+                    </p>
+                    <a href="#"
+                       class="mt-5 inline-block text-sm font-semibold text-amber-400">
+                        Aprender →
+                    </a>
+                </article>
+                <article class="rounded-2xl border border-white/10 bg-zinc-950 p-6 transition hover:-translate-y-1 hover:border-amber-500/50">
+                    <span class="text-3xl">🧰</span>
+                    <h3 class="mt-5 text-xl font-semibold">Equipamentos</h3>
+                    <p class="mt-3 text-sm leading-6 text-zinc-400">
+                        Conheça as ferramentas utilizadas no dia a dia do bar.
+                    </p>
+                    <a href="#"
+                       class="mt-5 inline-block text-sm font-semibold text-amber-400">
+                        Ver equipamentos →
+                    </a>
+                </article>
+            </div>
+        </div>
+    </section>
+    <section id="cocktails" class="py-20">
+        <div class="mx-auto max-w-7xl px-6">
+            <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+                <div>
+                    <p class="font-medium text-amber-400">Pratique suas habilidades</p>
+                    <h2 class="mt-3 text-3xl font-bold tracking-tight">Drinks para começar</h2>
+                </div>
+                <a href="#"
+                   class="text-sm font-semibold text-amber-400 hover:text-amber-300">
+                    Ver todas as receitas →
+                </a>
+            </div>
+            <div class="mt-10 rounded-2xl border border-dashed border-white/15 px-6 py-16 text-center">
+                <p class="text-zinc-400">Os primeiros drinks cadastrados aparecerão aqui.</p>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

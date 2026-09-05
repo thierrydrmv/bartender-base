@@ -4,10 +4,21 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Bartender Base{% endblock %}</title>
+        <title>
+            {% block title %}
+                Bartender Base
+            {% endblock title %}
+        </title>
         {% tailwind_css %}
     </head>
-    <body class="bg-slate-950 text-white">
-        {% block content %}{% endblock %}
+    <body class="min-h-screen bg-zinc-950 text-zinc-100">
+        <div class="flex min-h-screen flex-col">
+            {% include "partials/navbar.html" %}
+            <main class="flex-1">
+                {% block content %}
+                {% endblock content %}
+            </main>
+            {% include "partials/footer.html" %}
+        </div>
     </body>
 </html>
