@@ -1,8 +1,61 @@
 # Create your views here.
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 
 from .models import Cocktail, Equipment, Ingredient, IngredientCategory, Technique
+
+
+def cocktail_list(request):
+    query = request.GET.get("q", "").strip()
+    difficulty = request.GET.get("difficulty", "").strip()
+    technique_slug = request.GET.get("technique", "").strip()
+    drink_type = request.GET.get("type", "").strip()
+
+    cocktails = (
+        Cocktail.objects.filter(is_published=True)
+        .select_related("glassware")
+        .prefetch_related("techniques")
+    )
+
+    if query:
+        cocktails = cocktails.filter(
+            Q(name__icontains=query)
+            | Q(description__icontains=query)
+            | Q(ingredients__name__icontains=query)
+        )
+
+    if difficulty:
+        cocktails = cocktails.filter(difficulty=difficulty)
+
+    if technique_slug:
+        cocktails = cocktails.filter(techniques__slug=technique_slug)
+
+    if drink_type == "alcoholic":
+        cocktails = cocktails.filter(is_alcoholic=True)
+    elif drink_type == "non_alcoholic":
+        cocktails = cocktails.filter(is_alcoholic=False)
+
+    cocktails = cocktails.distinct().order_by("name")
+
+    paginator = Paginator(cocktails, 9)
+    page = paginator.get_page(request.GET.get("page"))
+
+    context = {
+        "page": page,
+        "techniques": Technique.objects.all(),
+        "difficulty_choices": Cocktail.Difficulty.choices,
+        "query": query,
+        "selected_difficulty": difficulty,
+        "selected_technique": technique_slug,
+        "selected_type": drink_type,
+    }
+
+    return render(
+        request,
+        "cocktails/cocktail_list.html",
+        context,
+    )
 
 
 def cocktail_detail(request, slug):

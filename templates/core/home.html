@@ -24,7 +24,7 @@
                        class="rounded-xl bg-amber-500 px-6 py-3 text-center font-semibold text-zinc-950 transition hover:bg-amber-400">
                         Começar a aprender
                     </a>
-                    <a href="#cocktails"
+                    <a href="{% url 'cocktails:list' %}"
                        class="rounded-xl border border-white/15 px-6 py-3 text-center font-semibold transition hover:border-amber-400 hover:text-amber-400">
                         Explorar drinks
                     </a>
@@ -75,7 +75,7 @@
                     <p class="mt-3 text-sm leading-6 text-zinc-400">
                         Receitas, proporções, guarnições e modos de preparo.
                     </p>
-                    <a href="#cocktails"
+                    <a href="{% url 'cocktails:list' %}"
                        class="mt-5 inline-block text-sm font-semibold text-amber-400">
                         Explorar →
                     </a>
@@ -125,7 +125,7 @@
                     <p class="font-medium text-amber-400">Pratique suas habilidades</p>
                     <h2 class="mt-3 text-3xl font-bold tracking-tight">Drinks para começar</h2>
                 </div>
-                <a href="#"
+                <a href="{% url 'cocktails:list' %}"
                    class="text-sm font-semibold text-amber-400 hover:text-amber-300">
                     Ver todas as receitas →
                 </a>

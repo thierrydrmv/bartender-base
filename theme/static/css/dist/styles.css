@@ -271,6 +271,9 @@
   .mt-14 {
     margin-top: calc(var(--spacing) * 14);
   }
+  .mb-8 {
+    margin-bottom: calc(var(--spacing) * 8);
+  }
   .line-clamp-3 {
     overflow: hidden;
     display: -webkit-box;
@@ -408,6 +411,11 @@
         border-color: color-mix(in oklab, var(--color-white) 10%, transparent);
       }
     }
+  }
+  .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .overflow-hidden {
     overflow: hidden;
@@ -753,12 +761,29 @@
       }
     }
   }
+  .hover\:border-amber-500 {
+    &:hover {
+      @media (hover: hover) {
+        border-color: var(--color-amber-500);
+      }
+    }
+  }
   .hover\:border-amber-500\/50 {
     &:hover {
       @media (hover: hover) {
         border-color: color-mix(in srgb, oklch(76.9% 0.188 70.08) 50%, transparent);
         @supports (color: color-mix(in lab, red, red)) {
           border-color: color-mix(in oklab, var(--color-amber-500) 50%, transparent);
+        }
+      }
+    }
+  }
+  .hover\:border-white\/30 {
+    &:hover {
+      @media (hover: hover) {
+        border-color: color-mix(in srgb, #fff 30%, transparent);
+        @supports (color: color-mix(in lab, red, red)) {
+          border-color: color-mix(in oklab, var(--color-white) 30%, transparent);
         }
       }
     }
@@ -837,6 +862,11 @@
       line-height: var(--tw-leading, var(--text-6xl--line-height));
     }
   }
+  .md\:col-span-2 {
+    @media (width >= 48rem) {
+      grid-column: span 2 / span 2;
+    }
+  }
   .md\:flex {
     @media (width >= 48rem) {
       display: flex;
@@ -857,6 +887,16 @@
       top: calc(var(--spacing) * 6);
     }
   }
+  .lg\:col-span-2 {
+    @media (width >= 64rem) {
+      grid-column: span 2 / span 2;
+    }
+  }
+  .lg\:col-span-5 {
+    @media (width >= 64rem) {
+      grid-column: span 5 / span 5;
+    }
+  }
   .lg\:grid-cols-2 {
     @media (width >= 64rem) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -870,6 +910,11 @@
   .lg\:grid-cols-4 {
     @media (width >= 64rem) {
       grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .lg\:grid-cols-5 {
+    @media (width >= 64rem) {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
     }
   }
   .lg\:grid-cols-\[minmax\(0\,2fr\)_minmax\(280px\,1fr\)\] {

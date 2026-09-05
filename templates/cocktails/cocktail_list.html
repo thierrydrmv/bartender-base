@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block title %}
+    Drinks | Bartender Base
+{% endblock title %}
+{% block content %}
+    <section class="border-b border-white/10 bg-zinc-900/40">
+        <div class="mx-auto max-w-7xl px-6 py-16">
+            <p class="font-medium text-amber-400">Receitas</p>
+            <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">Catálogo de drinks</h1>
+            <p class="mt-5 max-w-2xl leading-7 text-zinc-400">
+                Explore receitas clássicas e descubra seus ingredientes,
+                equipamentos e técnicas de preparo.
+            </p>
+            <form method="get" class="mt-10 grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+                <div class="lg:col-span-2">
+                    <label for="cocktail-search" class="sr-only">Pesquisar drinks</label>
+                    <input id="cocktail-search"
+                           type="search"
+                           name="q"
+                           value="{{ query }}"
+                           placeholder="Drink ou ingrediente..."
+                           class="w-full rounded-xl border border-white/10 bg-zinc-950 px-4 py-3 outline-none placeholder:text-zinc-600 focus:border-amber-500">
+                </div>
+                <div>
+                    <label for="difficulty" class="sr-only">Dificuldade</label>
+                    <select id="difficulty"
+                            name="difficulty"
+                            class="w-full rounded-xl border border-white/10 bg-zinc-950 px-4 py-3 outline-none focus:border-amber-500">
+                        <option value="">Dificuldade</option>
+                        {% for value, label in difficulty_choices %}
+                            <option value="{{ value }}"
+                                    {% if selected_difficulty == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="technique" class="sr-only">Técnica</label>
+                    <select id="technique"
+                            name="technique"
+                            class="w-full rounded-xl border border-white/10 bg-zinc-950 px-4 py-3 outline-none focus:border-amber-500">
+                        <option value="">Técnica</option>
+                        {% for technique in techniques %}
+                            <option value="{{ technique.slug }}"
+                                    {% if selected_technique == technique.slug %}selected{% endif %}>
+                                {{ technique.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="drink-type" class="sr-only">Tipo de drink</label>
+                    <select id="drink-type"
+                            name="type"
+                            class="w-full rounded-xl border border-white/10 bg-zinc-950 px-4 py-3 outline-none focus:border-amber-500">
+                        <option value="">Com ou sem álcool</option>
+                        <option value="alcoholic"
+                                {% if selected_type == "alcoholic" %}selected{% endif %}>
+                            Com álcool
+                        </option>
+                        <option value="non_alcoholic"
+                                {% if selected_type == "non_alcoholic" %}selected{% endif %}>
+                            Sem álcool
+                        </option>
+                    </select>
+                </div>
+                <div class="flex gap-3 md:col-span-2 lg:col-span-5">
+                    <button type="submit"
+                            class="rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 transition hover:bg-amber-400">
+                        Aplicar filtros
+                    </button>
+                    {% if query or selected_difficulty or selected_technique or selected_type %}
+                        <a href="{% url 'cocktails:list' %}"
+                           class="rounded-xl border border-white/10 px-6 py-3 font-semibold text-zinc-300 transition hover:border-white/30">
+                            Limpar
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </section>
+    <section class="mx-auto max-w-7xl px-6 py-16">
+        <div class="mb-8 flex items-center justify-between gap-4">
+            <p class="text-sm text-zinc-400">
+                {{ page.paginator.count }}
+                {% if page.paginator.count == 1 %}
+                    drink encontrado
+                {% else %}
+                    drinks encontrados
+                {% endif %}
+            </p>
+        </div>
+        {% if page %}
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {% for cocktail in page %}
+                    <article class="group overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 transition hover:-translate-y-1 hover:border-amber-500/50">
+                        <a href="{{ cocktail.get_absolute_url }}">
+                            <div class="aspect-[4/3] overflow-hidden bg-zinc-800">
+                                {% if cocktail.image %}
+                                    <img src="{{ cocktail.image.url }}"
+                                         alt="Drink {{ cocktail.name }}"
+                                         class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
+                                {% else %}
+                                    <div class="flex h-full items-center justify-center bg-gradient-to-br from-amber-500/20 to-zinc-900">
+                                        <span class="text-7xl" aria-hidden="true">🍸</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </a>
+                        <div class="p-6">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-400">
+                                    {{ cocktail.get_difficulty_display }}
+                                </span>
+                                <span class="rounded-full bg-white/5 px-3 py-1 text-xs text-zinc-400">
+                                    {{ cocktail.preparation_time }} min
+                                </span>
+                                <span class="rounded-full bg-white/5 px-3 py-1 text-xs text-zinc-400">
+                                    {% if cocktail.is_alcoholic %}
+                                        Com álcool
+                                    {% else %}
+                                        Sem álcool
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <h2 class="mt-4 text-xl font-semibold">
+                                <a href="{{ cocktail.get_absolute_url }}"
+                                   class="transition group-hover:text-amber-400">
+                                    {{ cocktail.name }}
+                                </a>
+                            </h2>
+                            <p class="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">{{ cocktail.description }}</p>
+                            {% if cocktail.techniques.all %}
+                                <div class="mt-4 flex flex-wrap gap-2">
+                                    {% for technique in cocktail.techniques.all %}
+                                        <span class="text-xs text-zinc-500">
+                                            {{ technique.name }}
+                                            {% if not forloop.last %}·{% endif %}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="mt-6 flex items-center justify-between gap-4">
+                                <span class="truncate text-sm text-zinc-500">{{ cocktail.glassware.name }}</span>
+                                <a href="{{ cocktail.get_absolute_url }}"
+                                   class="shrink-0 text-sm font-semibold text-amber-400 hover:text-amber-300">
+                                    Ver receita →
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+            {% if page.has_other_pages %}
+                <nav class="mt-12 flex items-center justify-center gap-3"
+                     aria-label="Paginação">
+                    {% if page.has_previous %}
+                        <a href="?q={{ query }}&difficulty={{ selected_difficulty }}&technique={{ selected_technique }}&type={{ selected_type }}&page={{ page.previous_page_number }}"
+                           class="rounded-lg border border-white/10 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                            ← Anterior
+                        </a>
+                    {% endif %}
+                    <span class="px-3 text-sm text-zinc-400">
+                        Página {{ page.number }} de {{ page.paginator.num_pages }}
+                    </span>
+                    {% if page.has_next %}
+                        <a href="?q={{ query }}&difficulty={{ selected_difficulty }}&technique={{ selected_technique }}&type={{ selected_type }}&page={{ page.next_page_number }}"
+                           class="rounded-lg border border-white/10 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                            Próxima →
+                        </a>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="rounded-2xl border border-dashed border-white/15 px-6 py-16 text-center">
+                <span class="text-5xl" aria-hidden="true">🍸</span>
+                <h2 class="mt-5 text-xl font-semibold">Nenhum drink encontrado</h2>
+                <p class="mt-2 text-zinc-400">Tente remover ou alterar os filtros da pesquisa.</p>
+                <a href="{% url 'cocktails:list' %}"
+                   class="mt-6 inline-block font-semibold text-amber-400">Limpar filtros</a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock content %}
