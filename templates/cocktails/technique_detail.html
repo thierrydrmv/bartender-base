@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ technique.name }} | Bartender Base
+{% endblock title %}
+{% block content %}
+    <section class="mx-auto max-w-5xl px-6 py-16">
+        <a href="{% url 'cocktails:technique-list' %}"
+           class="text-sm font-semibold text-amber-400">← Voltar para técnicas</a>
+        <p class="mt-10 font-medium text-amber-400">Técnica de preparo</p>
+        <h1 class="mt-3 text-4xl font-bold sm:text-5xl">{{ technique.name }}</h1>
+        <p class="mt-6 whitespace-pre-line leading-8 text-zinc-400">{{ technique.description }}</p>
+        {% if technique.instructions %}
+            <div class="mt-12 rounded-2xl border border-white/10 bg-zinc-900 p-6">
+                <h2 class="text-2xl font-bold">Como executar</h2>
+                <div class="mt-4 whitespace-pre-line leading-8 text-zinc-300">{{ technique.instructions }}</div>
+            </div>
+        {% endif %}
+        <h2 class="mt-14 text-2xl font-bold">Drinks que utilizam esta técnica</h2>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            {% for cocktail in cocktails %}
+                <a href="{{ cocktail.get_absolute_url }}"
+                   class="rounded-xl border border-white/10 bg-zinc-900 p-5 hover:border-amber-500/50">
+                    <h3 class="font-semibold">{{ cocktail.name }}</h3>
+                    <p class="mt-2 text-sm text-zinc-400">Ver receita →</p>
+                </a>
+            {% empty %}
+                <p class="text-zinc-500">Nenhum drink publicado utiliza esta técnica.</p>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock content %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}
+    Ingredientes | Bartender Base
+{% endblock title %}
+{% block content %}
+    <section class="border-b border-white/10 bg-zinc-900/40">
+        <div class="mx-auto max-w-7xl px-6 py-16">
+            <p class="font-medium text-amber-400">Enciclopédia</p>
+            <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">Ingredientes</h1>
+            <p class="mt-5 max-w-2xl leading-7 text-zinc-400">
+                Conheça os destilados, frutas, xaropes e demais ingredientes
+                utilizados na preparação de drinks.
+            </p>
+            <form method="get" class="mt-8 flex max-w-3xl flex-col gap-3 sm:flex-row">
+                <input type="search"
+                       name="q"
+                       value="{{ query }}"
+                       placeholder="Pesquisar ingrediente..."
+                       class="min-w-0 flex-1 rounded-xl border border-white/10 bg-zinc-950 px-4 py-3 outline-none placeholder:text-zinc-600 focus:border-amber-500">
+                <select name="category"
+                        class="rounded-xl border border-white/10 bg-zinc-950 px-4 py-3 outline-none focus:border-amber-500">
+                    <option value="">Todas as categorias</option>
+                    {% for category in categories %}
+                        <option value="{{ category.slug }}"
+                                {% if selected_category == category.slug %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit"
+                        class="rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 hover:bg-amber-400">
+                    Buscar
+                </button>
+            </form>
+        </div>
+    </section>
+    <section class="mx-auto max-w-7xl px-6 py-16">
+        {% if ingredients %}
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {% for ingredient in ingredients %}
+                    <article class="group overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 transition hover:-translate-y-1 hover:border-amber-500/50">
+                        <a href="{{ ingredient.get_absolute_url }}">
+                            {% if ingredient.image %}
+                                <img src="{{ ingredient.image.url }}"
+                                     alt="{{ ingredient.name }}"
+                                     class="aspect-[4/3] w-full object-cover">
+                            {% else %}
+                                <div class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-amber-500/20 to-zinc-900">
+                                    <span class="text-7xl">🍋</span>
+                                </div>
+                            {% endif %}
+                        </a>
+                        <div class="p-6">
+                            <span class="text-sm font-medium text-amber-400">{{ ingredient.category.name }}</span>
+                            <h2 class="mt-2 text-xl font-semibold">
+                                <a href="{{ ingredient.get_absolute_url }}"
+                                   class="group-hover:text-amber-400">{{ ingredient.name }}</a>
+                            </h2>
+                            <p class="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">
+                                {{ ingredient.description|default:"Descrição em breve." }}
+                            </p>
+                            <a href="{{ ingredient.get_absolute_url }}"
+                               class="mt-5 inline-block text-sm font-semibold text-amber-400">
+                                Conhecer ingrediente →
+                            </a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="rounded-2xl border border-dashed border-white/15 px-6 py-16 text-center">
+                <p class="text-zinc-400">Nenhum ingrediente encontrado.</p>
+            </div>
+        {% endif %}
+    </section>
+{% endblock content %}

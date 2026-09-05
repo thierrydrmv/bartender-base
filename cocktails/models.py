@@ -42,6 +42,12 @@ class Ingredient(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse(
+            "cocktails:ingredient-detail",
+            kwargs={"slug": self.slug},
+        )
+
 
 class Technique(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -56,6 +62,12 @@ class Technique(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse(
+            "cocktails:technique-detail",
+            kwargs={"slug": self.slug},
+        )
 
 
 class Equipment(models.Model):

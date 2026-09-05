@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}
+    Técnicas | Bartender Base
+{% endblock title %}
+{% block content %}
+    <section class="border-b border-white/10 bg-zinc-900/40">
+        <div class="mx-auto max-w-7xl px-6 py-16">
+            <p class="font-medium text-amber-400">Aprendizado prático</p>
+            <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">Técnicas de preparo</h1>
+            <p class="mt-5 max-w-2xl leading-7 text-zinc-400">
+                Aprenda os principais métodos utilizados por bartenders para
+                preparar, misturar, resfriar e finalizar bebidas.
+            </p>
+            <form method="get" class="mt-8 flex max-w-xl gap-3">
+                <input type="search"
+                       name="q"
+                       value="{{ query }}"
+                       placeholder="Pesquisar técnica..."
+                       class="min-w-0 flex-1 rounded-xl border border-white/10 bg-zinc-950 px-4 py-3 outline-none placeholder:text-zinc-600 focus:border-amber-500">
+                <button type="submit"
+                        class="rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 hover:bg-amber-400">
+                    Buscar
+                </button>
+            </form>
+        </div>
+    </section>
+    <section class="mx-auto max-w-7xl px-6 py-16">
+        {% if techniques %}
+            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {% for technique in techniques %}
+                    <article class="group rounded-2xl border border-white/10 bg-zinc-900 p-6 transition hover:-translate-y-1 hover:border-amber-500/50">
+                        <div class="flex size-12 items-center justify-center rounded-xl bg-amber-500/10 text-2xl">🧊</div>
+                        <h2 class="mt-5 text-xl font-semibold">
+                            <a href="{{ technique.get_absolute_url }}"
+                               class="group-hover:text-amber-400">{{ technique.name }}</a>
+                        </h2>
+                        <p class="mt-3 line-clamp-3 text-sm leading-6 text-zinc-400">{{ technique.description }}</p>
+                        <a href="{{ technique.get_absolute_url }}"
+                           class="mt-5 inline-block text-sm font-semibold text-amber-400">
+                            Aprender técnica →
+                        </a>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="rounded-2xl border border-dashed border-white/15 px-6 py-16 text-center">
+                <p class="text-zinc-400">Nenhuma técnica encontrada.</p>
+            </div>
+        {% endif %}
+    </section>
+{% endblock content %}
