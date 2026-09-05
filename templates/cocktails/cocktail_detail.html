@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ cocktail.name }} | Bartender Base
+{% endblock title %}
+{% block content %}
+    <article>
+        <section class="border-b border-white/10 bg-zinc-900/40">
+            <div class="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-2 lg:items-center">
+                <div>
+                    <a href="{% url 'home' %}#cocktails"
+                       class="text-sm font-medium text-amber-400 hover:text-amber-300">
+                        ← Voltar para os drinks
+                    </a>
+                    <div class="mt-6 flex flex-wrap gap-2">
+                        <span class="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-sm text-amber-400">
+                            {{ cocktail.get_difficulty_display }}
+                        </span>
+                        <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-zinc-300">
+                            {{ cocktail.preparation_time }} min
+                        </span>
+                        <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-zinc-300">
+                            {% if cocktail.is_alcoholic %}
+                                Alcoólico
+                            {% else %}
+                                Sem álcool
+                            {% endif %}
+                        </span>
+                    </div>
+                    <h1 class="mt-6 text-4xl font-bold tracking-tight sm:text-6xl">{{ cocktail.name }}</h1>
+                    <p class="mt-6 max-w-xl text-lg leading-8 text-zinc-400">{{ cocktail.description }}</p>
+                </div>
+                <div class="overflow-hidden rounded-3xl border border-white/10 bg-zinc-900">
+                    {% if cocktail.image %}
+                        <img src="{{ cocktail.image.url }}"
+                             alt="Drink {{ cocktail.name }}"
+                             class="aspect-[4/3] h-full w-full object-cover">
+                    {% else %}
+                        <div class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-amber-500/20 to-zinc-900">
+                            <span class="text-8xl" aria-hidden="true">🍸</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+        <section class="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
+            <div>
+                <section>
+                    <p class="font-medium text-amber-400">Receita</p>
+                    <h2 class="mt-2 text-3xl font-bold">Ingredientes</h2>
+                    <ul class="mt-6 divide-y divide-white/10 rounded-2xl border border-white/10 bg-zinc-900/40 px-6">
+                        {% for item in cocktail.ingredient_items.all %}
+                            <li class="flex items-start justify-between gap-6 py-4">
+                                <div>
+                                    <span class="font-medium">{{ item.ingredient.name }}</span>
+                                    {% if item.notes %}
+                                        <p class="mt-1 text-sm text-zinc-500">{{ item.notes }}</p>
+                                    {% endif %}
+                                </div>
+                                <span class="shrink-0 text-zinc-300">
+                                    {% if item.quantity %}
+                                        {{ item.quantity|floatformat:"-2" }}
+                                    {% endif %}
+                                    {{ item.get_unit_display }}
+                                    {% if item.is_optional %}
+                                        <span class="text-zinc-500">(opcional)</span>
+                                    {% endif %}
+                                </span>
+                            </li>
+                        {% empty %}
+                            <li class="py-6 text-zinc-500">Nenhum ingrediente cadastrado.</li>
+                        {% endfor %}
+                    </ul>
+                </section>
+                <section class="mt-14">
+                    <p class="font-medium text-amber-400">Passo a passo</p>
+                    <h2 class="mt-2 text-3xl font-bold">Modo de preparo</h2>
+                    <div class="mt-6 whitespace-pre-line rounded-2xl border border-white/10 bg-zinc-900/40 p-6 leading-8 text-zinc-300">{{ cocktail.instructions }}</div>
+                </section>
+                {% if cocktail.garnish %}
+                    <section class="mt-14">
+                        <p class="font-medium text-amber-400">Finalização</p>
+                        <h2 class="mt-2 text-3xl font-bold">Guarnição</h2>
+                        <p class="mt-5 text-zinc-300">{{ cocktail.garnish }}</p>
+                    </section>
+                {% endif %}
+            </div>
+            <aside>
+                <div class="space-y-8 rounded-2xl border border-white/10 bg-zinc-900/60 p-6 lg:sticky lg:top-6">
+                    <section>
+                        <h2 class="font-semibold text-white">Servir em</h2>
+                        <p class="mt-2 text-zinc-400">{{ cocktail.glassware.name }}</p>
+                    </section>
+                    <section>
+                        <h2 class="font-semibold text-white">Técnicas</h2>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            {% for technique in cocktail.techniques.all %}
+                                <span class="rounded-lg bg-white/5 px-3 py-2 text-sm text-zinc-300">{{ technique.name }}</span>
+                            {% empty %}
+                                <p class="text-sm text-zinc-500">Nenhuma técnica cadastrada.</p>
+                            {% endfor %}
+                        </div>
+                    </section>
+                    <section>
+                        <h2 class="font-semibold text-white">Equipamentos</h2>
+                        <ul class="mt-3 space-y-2 text-zinc-400">
+                            {% for item in cocktail.equipment.all %}
+                                <li class="flex items-center gap-2">
+                                    <span class="text-amber-400">•</span>
+                                    {{ item.name }}
+                                </li>
+                            {% empty %}
+                                <li class="text-sm text-zinc-500">Nenhum equipamento cadastrado.</li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                </div>
+            </aside>
+        </section>
+    </article>
+{% endblock content %}
