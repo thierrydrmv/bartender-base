@@ -2,7 +2,7 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 
-from .models import Cocktail, Ingredient, IngredientCategory, Technique
+from .models import Cocktail, Equipment, Ingredient, IngredientCategory, Technique
 
 
 def cocktail_detail(request, slug):
@@ -101,3 +101,46 @@ def technique_detail(request, slug):
     }
 
     return render(request, "cocktails/technique_detail.html", context)
+
+
+def equipment_list(request):
+    query = request.GET.get("q", "").strip()
+
+    equipment = Equipment.objects.all()
+
+    if query:
+        equipment = equipment.filter(Q(name__icontains=query) | Q(description__icontains=query))
+
+    context = {
+        "equipment": equipment,
+        "query": query,
+    }
+
+    return render(
+        request,
+        "cocktails/equipment_list.html",
+        context,
+    )
+
+
+def equipment_detail(request, slug):
+    equipment = get_object_or_404(
+        Equipment,
+        slug=slug,
+    )
+
+    cocktails = Cocktail.objects.filter(
+        equipment=equipment,
+        is_published=True,
+    )
+
+    context = {
+        "equipment": equipment,
+        "cocktails": cocktails,
+    }
+
+    return render(
+        request,
+        "cocktails/equipment_detail.html",
+        context,
+    )

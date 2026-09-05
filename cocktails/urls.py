@@ -6,6 +6,16 @@ app_name = "cocktails"
 
 urlpatterns = [
     path(
+        "equipment/",
+        views.equipment_list,
+        name="equipment-list",
+    ),
+    path(
+        "equipment/<slug:slug>/",
+        views.equipment_detail,
+        name="equipment-detail",
+    ),
+    path(
         "ingredients/",
         views.ingredient_list,
         name="ingredient-list",
