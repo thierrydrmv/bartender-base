@@ -18,9 +18,15 @@
                        placeholder="Pesquisar técnica..."
                        class="min-w-0 flex-1 rounded-xl border border-white/10 bg-zinc-950 px-4 py-3 outline-none placeholder:text-zinc-600 focus:border-amber-500">
                 <button type="submit"
-                        class="rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 hover:bg-amber-400">
-                    Buscar
+                        class="cursor-pointer rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 hover:bg-amber-400">
+                    Aplicar filtros
                 </button>
+                {% if query %}
+                    <a href="{% url 'cocktails:technique-list' %}"
+                       class="rounded-xl border border-white/10 px-6 py-3 font-semibold text-zinc-300 transition hover:border-white/30">
+                        Limpar
+                    </a>
+                {% endif %}
             </form>
         </div>
     </section>
@@ -45,6 +51,10 @@
         {% else %}
             <div class="rounded-2xl border border-dashed border-white/15 px-6 py-16 text-center">
                 <p class="text-zinc-400">Nenhuma técnica encontrada.</p>
+                {% if query %}
+                    <a href="{% url 'cocktails:technique-list' %}"
+                       class="mt-4 inline-block font-semibold text-amber-400">Limpar pesquisa</a>
+                {% endif %}
             </div>
         {% endif %}
     </section>

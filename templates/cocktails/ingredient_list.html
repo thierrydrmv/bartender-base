@@ -28,9 +28,15 @@
                     {% endfor %}
                 </select>
                 <button type="submit"
-                        class="rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 hover:bg-amber-400">
-                    Buscar
+                        class="cursor-pointer rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 hover:bg-amber-400">
+                    Aplicar filtros
                 </button>
+                {% if query or selected_category %}
+                    <a href="{% url 'cocktails:ingredient-list' %}"
+                       class="rounded-xl border border-white/10 px-6 py-3 font-semibold text-zinc-300 transition hover:border-white/30">
+                        Limpar
+                    </a>
+                {% endif %}
             </form>
         </div>
     </section>
@@ -70,6 +76,10 @@
         {% else %}
             <div class="rounded-2xl border border-dashed border-white/15 px-6 py-16 text-center">
                 <p class="text-zinc-400">Nenhum ingrediente encontrado.</p>
+                {% if query %}
+                    <a href="{% url 'cocktails:ingredient-list' %}"
+                       class="mt-4 inline-block font-semibold text-amber-400">Limpar pesquisa</a>
+                {% endif %}
             </div>
         {% endif %}
     </section>

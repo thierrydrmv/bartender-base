@@ -20,9 +20,15 @@
                        placeholder="Ex.: coqueteleira, dosador..."
                        class="min-w-0 flex-1 rounded-xl border border-white/10 bg-zinc-950 px-4 py-3 outline-none placeholder:text-zinc-600 focus:border-amber-500">
                 <button type="submit"
-                        class="rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 transition hover:bg-amber-400">
-                    Buscar
+                        class="cursor-pointer rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 transition hover:bg-amber-400">
+                    Aplicar filtros
                 </button>
+                {% if query %}
+                    <a href="{% url 'cocktails:equipment-list' %}"
+                       class="rounded-xl border border-white/10 px-6 py-3 font-semibold text-zinc-300 transition hover:border-white/30">
+                        Limpar
+                    </a>
+                {% endif %}
             </form>
         </div>
     </section>
