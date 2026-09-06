@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ lesson.title }} | Bartender Base
+{% endblock title %}
+{% block content %}
+    <article>
+        <header class="border-b border-white/10 bg-zinc-900/40">
+            <div class="mx-auto max-w-4xl px-6 py-16">
+                <a href="{{ lesson.learning_path.get_absolute_url }}"
+                   class="text-sm font-semibold text-amber-400 hover:text-amber-300">
+                    ← {{ lesson.learning_path.title }}
+                </a>
+                <div class="mt-10 flex flex-wrap gap-2">
+                    <span class="rounded-full bg-amber-500/10 px-3 py-1 text-sm text-amber-400">
+                        {{ lesson.get_difficulty_display }}
+                    </span>
+                    <span class="rounded-full bg-white/5 px-3 py-1 text-sm text-zinc-400">
+                        {{ lesson.reading_time }} min de leitura
+                    </span>
+                </div>
+                <h1 class="mt-6 text-4xl font-bold tracking-tight sm:text-5xl">{{ lesson.title }}</h1>
+                <p class="mt-6 text-lg leading-8 text-zinc-400">{{ lesson.summary }}</p>
+            </div>
+        </header>
+        <div class="mx-auto max-w-4xl px-6 py-16">
+            <div class="whitespace-pre-line text-lg leading-9 text-zinc-300">{{ lesson.content }}</div>
+            {% if techniques %}
+                <section class="mt-16 border-t border-white/10 pt-10">
+                    <h2 class="text-2xl font-bold">Técnicas relacionadas</h2>
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        {% for technique in techniques %}
+                            <a href="{{ technique.get_absolute_url }}"
+                               class="rounded-xl border border-white/10 bg-zinc-900 px-4 py-3 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                                {{ technique.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+            {% if cocktails %}
+                <section class="mt-16 border-t border-white/10 pt-10">
+                    <h2 class="text-2xl font-bold">Drinks relacionados</h2>
+                    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+                        {% for cocktail in cocktails %}
+                            <a href="{{ cocktail.get_absolute_url }}"
+                               class="group rounded-2xl border border-white/10 bg-zinc-900 p-5 transition hover:border-amber-500/50">
+                                <h3 class="font-semibold group-hover:text-amber-400">{{ cocktail.name }}</h3>
+                                <p class="mt-2 line-clamp-2 text-sm text-zinc-400">{{ cocktail.description }}</p>
+                                <span class="mt-4 inline-block text-sm font-semibold text-amber-400">Ver receita →</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+            <nav class="mt-16 grid gap-4 border-t border-white/10 pt-10 sm:grid-cols-2"
+                 aria-label="Navegação entre aulas">
+                {% if previous_lesson %}
+                    <a href="{{ previous_lesson.get_absolute_url }}"
+                       class="rounded-2xl border border-white/10 bg-zinc-900 p-5 transition hover:border-amber-500/50">
+                        <span class="text-sm text-zinc-500">← Aula anterior</span>
+                        <strong class="mt-2 block">{{ previous_lesson.title }}</strong>
+                    </a>
+                {% else %}
+                    {% comment %} <div></div> {% endcomment %}
+                {% endif %}
+                {% if next_lesson %}
+                    <a href="{{ next_lesson.get_absolute_url }}"
+                       class="rounded-2xl border border-white/10 bg-zinc-900 p-5 text-right transition hover:border-amber-500/50">
+                        <span class="text-sm text-zinc-500">Próxima aula →</span>
+                        <strong class="mt-2 block">{{ next_lesson.title }}</strong>
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+    </article>
+{% endblock content %}
