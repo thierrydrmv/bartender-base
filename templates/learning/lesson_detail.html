@@ -73,4 +73,64 @@
             </nav>
         </div>
     </article>
+    {% if cocktails or ingredients or techniques or equipment %}
+        <section class="mt-16 border-t border-white/10 pt-10">
+            <p class="font-medium text-amber-400">Explore o conteúdo</p>
+            <h2 class="mt-2 text-2xl font-bold">Itens relacionados à aula</h2>
+            <div class="mt-8 grid gap-8 md:grid-cols-2">
+                {% if cocktails %}
+                    <section>
+                        <h3 class="font-semibold text-zinc-200">Drinks</h3>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            {% for cocktail in cocktails %}
+                                <a href="{{ cocktail.get_absolute_url }}"
+                                   class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                                    🍸 {{ cocktail.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endif %}
+                {% if ingredients %}
+                    <section>
+                        <h3 class="font-semibold text-zinc-200">Ingredientes</h3>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            {% for ingredient in ingredients %}
+                                <a href="{{ ingredient.get_absolute_url }}"
+                                   class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                                    🍋 {{ ingredient.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endif %}
+                {% if techniques %}
+                    <section>
+                        <h3 class="font-semibold text-zinc-200">Técnicas</h3>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            {% for technique in techniques %}
+                                <a href="{{ technique.get_absolute_url }}"
+                                   class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                                    🧊 {{ technique.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endif %}
+                {% if equipment %}
+                    <section>
+                        <h3 class="font-semibold text-zinc-200">Equipamentos</h3>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            {% for item in equipment %}
+                                <a href="{{ item.get_absolute_url }}"
+                                   class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                                    🧰 {{ item.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
 {% endblock content %}

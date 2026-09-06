@@ -77,7 +77,9 @@ class LessonAdmin(admin.ModelAdmin):
     }
     filter_horizontal = (
         "cocktails",
+        "ingredients",
         "techniques",
+        "equipment",
     )
     ordering = (
         "learning_path",
@@ -115,7 +117,9 @@ class LessonAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "cocktails",
+                    "ingredients",
                     "techniques",
+                    "equipment",
                 ),
                 "classes": ("collapse",),
             },

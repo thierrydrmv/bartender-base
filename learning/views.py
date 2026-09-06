@@ -1,7 +1,7 @@
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, render
 
-from cocktails.models import Cocktail, Technique
+from cocktails.models import Cocktail, Equipment, Ingredient, Technique
 
 from .models import LearningPath, Lesson
 
@@ -90,12 +90,22 @@ def lesson_detail(request, slug):
         lessons=lesson,
     ).distinct()
 
+    equipments = Equipment.objects.filter(
+        lessons=lesson,
+    ).distinct()
+
+    ingredients = Ingredient.objects.filter(
+        lessons=lesson,
+    ).distinct()
+
     context = {
         "lesson": lesson,
         "previous_lesson": previous_lesson,
         "next_lesson": next_lesson,
         "cocktails": cocktails,
         "techniques": techniques,
+        "equipments": equipments,
+        "ingredients": ingredients,
     }
 
     return render(

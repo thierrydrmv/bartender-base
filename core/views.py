@@ -8,7 +8,7 @@ def home(request):
         Cocktail.objects.filter(is_published=True)
         .select_related("glassware")
         .prefetch_related("techniques")
-        .order_by("-created_at")[:3]
+        .order_by("-created_at")[:6]
     )
 
     context = {

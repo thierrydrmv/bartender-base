@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
+from cocktails.models import Cocktail, Glassware, Technique
 from learning.models import LearningPath, Lesson
 
 
@@ -57,6 +58,28 @@ class LearningViewTests(TestCase):
             reading_time=5,
             order=3,
             is_published=False,
+        )
+
+        cls.glassware = Glassware.objects.create(
+            name="Copo rocks",
+            slug="copo-rocks",
+        )
+        cls.cocktail = Cocktail.objects.create(
+            name="Caipirinha",
+            slug="caipirinha",
+            description="Clássico brasileiro.",
+            instructions="Macere os ingredientes e adicione gelo.",
+            difficulty=Cocktail.Difficulty.EASY,
+            preparation_time=5,
+            glassware=cls.glassware,
+            is_alcoholic=True,
+            is_published=True,
+        )
+        cls.technique = Technique.objects.create(
+            name="Montado",
+            slug="montado",
+            description="Drink preparado diretamente no copo.",
+            instructions="Adicione os ingredientes ao copo e misture.",
         )
 
     def test_learning_path_list_returns_success(self):
@@ -133,4 +156,28 @@ class LearningViewTests(TestCase):
         )
         self.assertIsNone(
             response.context["next_lesson"],
+        )
+
+    def test_lesson_displays_links_to_related_items(self):
+        self.first_lesson.cocktails.add(self.cocktail)
+
+        response = self.client.get(
+            self.first_lesson.get_absolute_url(),
+        )
+
+        self.assertContains(
+            response,
+            self.cocktail.get_absolute_url(),
+        )
+
+    def test_lesson_displays_related_technique(self):
+        self.first_lesson.techniques.add(self.technique)
+
+        response = self.client.get(
+            self.first_lesson.get_absolute_url(),
+        )
+
+        self.assertContains(
+            response,
+            self.technique.get_absolute_url(),
         )

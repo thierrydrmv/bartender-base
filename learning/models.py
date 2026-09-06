@@ -45,13 +45,24 @@ class Lesson(models.Model):
     reading_time = models.PositiveSmallIntegerField(default=5)
     order = models.PositiveSmallIntegerField(default=0)
     is_published = models.BooleanField(default=False)
+
     cocktails = models.ManyToManyField(
         "cocktails.Cocktail",
         related_name="lessons",
         blank=True,
     )
+    ingredients = models.ManyToManyField(
+        "cocktails.Ingredient",
+        related_name="lessons",
+        blank=True,
+    )
     techniques = models.ManyToManyField(
         "cocktails.Technique",
+        related_name="lessons",
+        blank=True,
+    )
+    equipment = models.ManyToManyField(
+        "cocktails.Equipment",
         related_name="lessons",
         blank=True,
     )
