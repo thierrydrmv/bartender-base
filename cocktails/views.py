@@ -92,7 +92,11 @@ def ingredient_list(request):
     if category_slug:
         ingredients = ingredients.filter(category__slug=category_slug)
 
+    paginator = Paginator(ingredients, 9)
+    page = paginator.get_page(request.GET.get("page"))
+
     context = {
+        "page": page,
         "ingredients": ingredients,
         "categories": IngredientCategory.objects.all(),
         "query": query,
@@ -129,7 +133,11 @@ def technique_list(request):
     if query:
         techniques = techniques.filter(Q(name__icontains=query) | Q(description__icontains=query))
 
+    paginator = Paginator(techniques, 9)
+    page = paginator.get_page(request.GET.get("page"))
+
     context = {
+        "page": page,
         "techniques": techniques,
         "query": query,
     }
@@ -164,7 +172,11 @@ def equipment_list(request):
     if query:
         equipment = equipment.filter(Q(name__icontains=query) | Q(description__icontains=query))
 
+    paginator = Paginator(equipment, 9)
+    page = paginator.get_page(request.GET.get("page"))
+
     context = {
+        "page": page,
         "equipment": equipment,
         "query": query,
     }
