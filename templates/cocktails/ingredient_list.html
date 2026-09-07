@@ -41,9 +41,9 @@
         </div>
     </section>
     <section class="mx-auto max-w-7xl px-6 py-16">
-        {% if ingredients %}
+        {% if page %}
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {% for ingredient in ingredients %}
+                {% for ingredient in page %}
                     <article class="group overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 transition hover:-translate-y-1 hover:border-amber-500/50">
                         <a href="{{ ingredient.get_absolute_url }}">
                             {% if ingredient.image %}
@@ -73,6 +73,26 @@
                     </article>
                 {% endfor %}
             </div>
+            {% if page.has_other_pages %}
+                <nav class="mt-12 flex items-center justify-center gap-3"
+                     aria-label="Paginação">
+                    {% if page.has_previous %}
+                        <a href="?q={{ query }}&difficulty={{ selected_difficulty }}&technique={{ selected_technique }}&type={{ selected_type }}&page={{ page.previous_page_number }}"
+                           class="rounded-lg border border-white/10 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                            ← Anterior
+                        </a>
+                    {% endif %}
+                    <span class="px-3 text-sm text-zinc-400">
+                        Página {{ page.number }} de {{ page.paginator.num_pages }}
+                    </span>
+                    {% if page.has_next %}
+                        <a href="?q={{ query }}&difficulty={{ selected_difficulty }}&technique={{ selected_technique }}&type={{ selected_type }}&page={{ page.next_page_number }}"
+                           class="rounded-lg border border-white/10 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                            Próxima →
+                        </a>
+                    {% endif %}
+                </nav>
+            {% endif %}
         {% else %}
             <div class="rounded-2xl border border-dashed border-white/15 px-6 py-16 text-center">
                 <p class="text-zinc-400">Nenhum ingrediente encontrado.</p>

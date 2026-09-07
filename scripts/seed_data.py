@@ -290,7 +290,7 @@ cocktail_data = [
         "name": "Old Fashioned",
         "description": "Cocktail clássico de whiskey, açúcar e bitters.",
         "instructions": (
-            "1. Adicione os ingredientes ao copo com gelo.\ com gelo.\n"
+            "1. Adicione os ingredientes ao copo com gelo.\n"
             "2. Misture até resfriar e atingir a diluição desejada."
         ),
         "difficulty": "medium",

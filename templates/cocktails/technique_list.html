@@ -31,9 +31,9 @@
         </div>
     </section>
     <section class="mx-auto max-w-7xl px-6 py-16">
-        {% if techniques %}
+        {% if page %}
             <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {% for technique in techniques %}
+                {% for technique in page %}
                     <article class="group rounded-2xl border border-white/10 bg-zinc-900 p-6 transition hover:-translate-y-1 hover:border-amber-500/50">
                         <div class="flex size-12 items-center justify-center rounded-xl bg-amber-500/10 text-2xl">🧊</div>
                         <h2 class="mt-5 text-xl font-semibold">
@@ -48,6 +48,26 @@
                     </article>
                 {% endfor %}
             </div>
+            {% if page.has_other_pages %}
+                <nav class="mt-12 flex items-center justify-center gap-3"
+                     aria-label="Paginação">
+                    {% if page.has_previous %}
+                        <a href="?q={{ query }}&difficulty={{ selected_difficulty }}&technique={{ selected_technique }}&type={{ selected_type }}&page={{ page.previous_page_number }}"
+                           class="rounded-lg border border-white/10 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                            ← Anterior
+                        </a>
+                    {% endif %}
+                    <span class="px-3 text-sm text-zinc-400">
+                        Página {{ page.number }} de {{ page.paginator.num_pages }}
+                    </span>
+                    {% if page.has_next %}
+                        <a href="?q={{ query }}&difficulty={{ selected_difficulty }}&technique={{ selected_technique }}&type={{ selected_type }}&page={{ page.next_page_number }}"
+                           class="rounded-lg border border-white/10 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                            Próxima →
+                        </a>
+                    {% endif %}
+                </nav>
+            {% endif %}
         {% else %}
             <div class="rounded-2xl border border-dashed border-white/15 px-6 py-16 text-center">
                 <p class="text-zinc-400">Nenhuma técnica encontrada.</p>
