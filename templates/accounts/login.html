@@ -55,6 +55,12 @@
                             <p class="mt-2 text-sm text-red-400">{{ error }}</p>
                         {% endfor %}
                     </div>
+                    <div class="text-right">
+                        <a href="{% url 'accounts:password-reset' %}"
+                           class="text-sm font-medium text-amber-400 hover:text-amber-300">
+                            Esqueci minha senha
+                        </a>
+                    </div>
                     <button type="submit"
                             class="w-full cursor-pointer rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 transition hover:bg-amber-400">
                         Entrar

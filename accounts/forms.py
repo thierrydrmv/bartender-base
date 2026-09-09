@@ -34,3 +34,29 @@ class RegisterForm(UserCreationForm):
             user.save()
 
         return user
+
+
+class UserUpdateForm(forms.ModelForm):
+    email = forms.EmailField(
+        required=True,
+        label="E-mail",
+    )
+
+    class Meta:
+        model = User
+        fields = (
+            "username",
+            "email",
+        )
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+
+        existing_user = (
+            User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists()
+        )
+
+        if existing_user:
+            raise forms.ValidationError("Já existe uma conta com este e-mail.")
+
+        return email

@@ -152,3 +152,8 @@ TAILWIND_APP_NAME = "theme"
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "accounts:profile"
 LOGOUT_REDIRECT_URL = "home"
+
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    "Bartender Base <noreply@bartenderbase.local>",
+)

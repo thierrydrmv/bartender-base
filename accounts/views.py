@@ -1,14 +1,16 @@
 # Create your views here.
 from collections import defaultdict
 
+from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404, redirect, render
 
 from cocktails.models import Favorite
 from learning.models import LearningPath, Lesson, LessonProgress
 
-from .forms import RegisterForm
+from .forms import RegisterForm, UserUpdateForm
 
 
 def register(request):
@@ -156,5 +158,38 @@ def profile(request):
     return render(
         request,
         "accounts/profile.html",
+        context,
+    )
+
+
+@login_required
+def update_profile(request):
+    user = get_object_or_404(
+        User,
+        pk=request.user.pk,
+    )
+
+    form = UserUpdateForm(
+        request.POST or None,
+        instance=user,
+    )
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+
+        messages.success(
+            request,
+            "Seus dados foram atualizados.",
+        )
+
+        return redirect("accounts:profile")
+
+    context = {
+        "form": form,
+    }
+
+    return render(
+        request,
+        "accounts/update_profile.html",
         context,
     )

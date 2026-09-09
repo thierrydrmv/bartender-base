@@ -1,0 +1,22 @@
+{% if form.non_field_errors %}
+    <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
+        {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+{% for field in form %}
+    <div>
+        <label for="{{ field.id_for_label }}"
+               class="mb-2 block text-sm font-medium text-zinc-300">{{ field.label }}</label>
+        <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-white/10 [&_input]:bg-zinc-950 [&_input]:px-4 [&_input]:py-3 [&_input]:text-zinc-100 [&_input]:outline-none [&_input]:focus:border-amber-500">
+            {{ field }}
+        </div>
+        {% if field.help_text %}
+            <div class="mt-2 text-xs leading-5 text-zinc-500 [&_ul]:space-y-1">{{ field.help_text|safe }}</div>
+        {% endif %}
+        {% for error in field.errors %}
+            <p class="mt-2 text-sm text-red-400">{{ error }}</p>
+        {% endfor %}
+    </div>
+{% endfor %}
