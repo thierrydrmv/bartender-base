@@ -351,6 +351,9 @@
     width: calc(var(--spacing) * 14);
     height: calc(var(--spacing) * 14);
   }
+  .h-2 {
+    height: calc(var(--spacing) * 2);
+  }
   .h-full {
     height: 100%;
   }
@@ -654,6 +657,12 @@
   .bg-zinc-950 {
     background-color: var(--color-zinc-950);
   }
+  .bg-zinc-950\/60 {
+    background-color: color-mix(in srgb, oklch(14.1% 0.005 285.823) 60%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-zinc-950) 60%, transparent);
+    }
+  }
   .bg-zinc-950\/95 {
     background-color: color-mix(in srgb, oklch(14.1% 0.005 285.823) 95%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
@@ -759,9 +768,6 @@
   }
   .text-center {
     text-align: center;
-  }
-  .text-right {
-    text-align: right;
   }
   .font-mono {
     font-family: var(--font-mono);

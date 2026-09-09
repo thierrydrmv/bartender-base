@@ -23,9 +23,16 @@
                         </div>
                         <strong class="text-2xl text-amber-400">{{ progress_percentage }}%</strong>
                     </div>
-                    <div class="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
-                        <div class="h-full rounded-full bg-amber-500 transition-all"
-                             style="width: {{ progress_percentage }}%"></div>
+                    <div class="mt-4">
+                        <label for="learning-progress" class="sr-only">
+                            Progresso da trilha: {{ progress_percentage }}%
+                        </label>
+                        <progress id="learning-progress"
+                                  value="{{ progress_percentage }}"
+                                  max="100"
+                                  class="h-2 w-full overflow-hidden rounded-full accent-amber-500">
+                            {{ progress_percentage }}%
+                        </progress>
                     </div>
                     {% if next_lesson %}
                         <a href="{{ next_lesson.get_absolute_url }}"
