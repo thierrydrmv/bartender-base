@@ -10,6 +10,7 @@
                 <span class="hidden text-xs text-zinc-500 sm:block">Conhecimento atrás do balcão</span>
             </span>
         </a>
+        <!-- Navegação desktop -->
         <div class="hidden items-center gap-8 md:flex">
             <a href="{% url 'cocktails:list' %}"
                class="text-sm font-medium text-zinc-300 transition hover:text-amber-400">Drinks</a>
@@ -30,29 +31,104 @@
                 Equipamentos
             </a>
         </div>
-        <div class="flex items-center gap-4">
+        <!-- Autenticação desktop -->
+        <div class="hidden items-center gap-4 md:flex">
             {% if user.is_authenticated %}
                 <a href="{% url 'accounts:profile' %}"
-                   class="text-sm font-medium text-zinc-300 transition hover:text-amber-400">
+                   class="text-sm font-medium text-zinc-300 hover:text-amber-400">
                     {{ user.username }}
                 </a>
                 <form action="{% url 'accounts:logout' %}" method="post">
                     {% csrf_token %}
                     <button type="submit"
-                            class="cursor-pointer rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:border-amber-400 hover:text-amber-400">
+                            class="cursor-pointer text-sm font-medium text-zinc-300 hover:text-amber-400">
                         Sair
                     </button>
                 </form>
             {% else %}
                 <a href="{% url 'accounts:login' %}"
-                   class="text-sm font-medium text-zinc-300 transition hover:text-amber-400">
-                    Entrar
-                </a>
+                   class="text-sm font-medium text-zinc-300 hover:text-amber-400">Entrar</a>
                 <a href="{% url 'accounts:register' %}"
                    class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-amber-400">
                     Criar conta
                 </a>
             {% endif %}
         </div>
+        <!-- Botão mobile -->
+        <button id="mobile-menu-button"
+                type="button"
+                class="cursor-pointer rounded-lg border border-white/10 p-2 text-zinc-300 transition hover:border-amber-500 hover:text-amber-400 md:hidden"
+                aria-controls="mobile-menu"
+                aria-expanded="false"
+                aria-label="Abrir menu">
+            <svg id="menu-open-icon"
+                 class="size-6"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <svg id="menu-close-icon"
+                 class="hidden size-6"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+            </svg>
+        </button>
     </nav>
+    <!-- Menu mobile -->
+    <div id="mobile-menu"
+         class="hidden border-t border-white/10 px-6 py-5 md:hidden">
+        <nav class="mx-auto flex max-w-7xl flex-col gap-1"
+             aria-label="Navegação mobile">
+            <a href="{% url 'cocktails:list' %}"
+               class="rounded-lg px-3 py-3 text-zinc-300 hover:bg-white/5 hover:text-amber-400">
+                Drinks
+            </a>
+            <a href="{% url 'learning:path-list' %}"
+               class="rounded-lg px-3 py-3 text-zinc-300 hover:bg-white/5 hover:text-amber-400">
+                Aprender
+            </a>
+            <a href="{% url 'cocktails:ingredient-list' %}"
+               class="rounded-lg px-3 py-3 text-zinc-300 hover:bg-white/5 hover:text-amber-400">
+                Ingredientes
+            </a>
+            <a href="{% url 'cocktails:technique-list' %}"
+               class="rounded-lg px-3 py-3 text-zinc-300 hover:bg-white/5 hover:text-amber-400">
+                Técnicas
+            </a>
+            <a href="{% url 'cocktails:equipment-list' %}"
+               class="rounded-lg px-3 py-3 text-zinc-300 hover:bg-white/5 hover:text-amber-400">
+                Equipamentos
+            </a>
+            <div class="my-3 border-t border-white/10"></div>
+            {% if user.is_authenticated %}
+                <a href="{% url 'accounts:profile' %}"
+                   class="rounded-lg px-3 py-3 text-zinc-300 hover:bg-white/5 hover:text-amber-400">
+                    Meu perfil
+                </a>
+                <form action="{% url 'accounts:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="w-full cursor-pointer rounded-lg px-3 py-3 text-left text-zinc-300 hover:bg-white/5 hover:text-amber-400">
+                        Sair
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'accounts:login' %}"
+                   class="rounded-lg px-3 py-3 text-zinc-300 hover:bg-white/5 hover:text-amber-400">
+                    Entrar
+                </a>
+                <a href="{% url 'accounts:register' %}"
+                   class="mt-2 rounded-lg bg-amber-500 px-4 py-3 text-center font-semibold text-zinc-950 hover:bg-amber-400">
+                    Criar conta
+                </a>
+            {% endif %}
+        </nav>
+    </div>
 </header>
