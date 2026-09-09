@@ -4,6 +4,7 @@ from .models import (
     Cocktail,
     CocktailIngredient,
     Equipment,
+    Favorite,
     Glassware,
     Ingredient,
     IngredientCategory,
@@ -65,3 +66,22 @@ class EquipmentAdmin(admin.ModelAdmin):
 @admin.register(Glassware)
 class GlasswareAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
+
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "cocktail",
+        "created_at",
+    )
+    search_fields = (
+        "user__username",
+        "user__email",
+        "cocktail__name",
+    )
+    list_select_related = (
+        "user",
+        "cocktail",
+    )
+    ordering = ("-created_at",)

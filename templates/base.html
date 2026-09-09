@@ -14,6 +14,15 @@
     <body class="min-h-screen bg-zinc-950 text-zinc-100">
         <div class="flex min-h-screen flex-col">
             {% include "partials/navbar.html" %}
+            {% if messages %}
+                <div class="mx-auto w-full max-w-7xl space-y-3 px-6 pt-6">
+                    {% for message in messages %}
+                        <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-400">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <main class="flex-1">
                 {% block content %}
                 {% endblock content %}

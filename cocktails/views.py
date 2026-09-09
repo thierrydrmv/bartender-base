@@ -1,12 +1,16 @@
 # Create your views here.
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from .models import (
     Cocktail,
     CocktailIngredient,
     Equipment,
+    Favorite,
     Ingredient,
     IngredientCategory,
     Technique,
@@ -75,9 +79,17 @@ def cocktail_detail(request, slug):
         slug=slug,
         is_published=True,
     )
+    is_favorite = False
+
+    if request.user.is_authenticated:
+        is_favorite = Favorite.objects.filter(
+            user=request.user,
+            cocktail=cocktail,
+        ).exists()
 
     context = {
         "cocktail": cocktail,
+        "is_favorite": is_favorite,
     }
 
     return render(request, "cocktails/cocktail_detail.html", context)
@@ -346,4 +358,36 @@ def cocktail_matcher(request):
         request,
         "cocktails/cocktail_matcher.html",
         context,
+    )
+
+
+@login_required
+@require_POST
+def toggle_favorite(request, slug):
+    cocktail = get_object_or_404(
+        Cocktail,
+        slug=slug,
+        is_published=True,
+    )
+
+    favorite, created = Favorite.objects.get_or_create(
+        user=request.user,
+        cocktail=cocktail,
+    )
+
+    if created:
+        messages.success(
+            request,
+            f"{cocktail.name} foi adicionado aos favoritos.",
+        )
+    else:
+        favorite.delete()
+
+        messages.success(
+            request,
+            f"{cocktail.name} foi removido dos favoritos.",
+        )
+
+    return redirect(
+        cocktail.get_absolute_url(),
     )

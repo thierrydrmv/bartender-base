@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
@@ -243,3 +244,31 @@ class CocktailIngredient(models.Model):
 
     def __str__(self):
         return f"{self.cocktail} — {self.ingredient}"
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="cocktail_favorites",
+    )
+    cocktail = models.ForeignKey(
+        Cocktail,
+        on_delete=models.CASCADE,
+        related_name="favorites",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "cocktail favorito"
+        verbose_name_plural = "cocktails favoritos"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "cocktail"],
+                name="unique_user_cocktail_favorite",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.user} — {self.cocktail}"
