@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}
+    O que posso preparar? | Bartender Base
+{% endblock title %}
+{% block content %}
+    <section class="border-b border-white/10 bg-zinc-900/40">
+        <div class="mx-auto max-w-7xl px-6 py-16">
+            <p class="font-medium text-amber-400">Use o que você tem</p>
+            <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">O que posso preparar?</h1>
+            <p class="mt-5 max-w-2xl text-lg leading-8 text-zinc-400">
+                Selecione os ingredientes disponíveis e descubra quais drinks
+                você já consegue preparar.
+            </p>
+        </div>
+    </section>
+    <section class="mx-auto max-w-7xl px-6 py-16">
+        <form action="{% url 'cocktails:matcher' %}#results" method="get">
+            {% regroup ingredients by category as ingredient_groups %}
+            <div class="space-y-10">
+                {% for group in ingredient_groups %}
+                    <fieldset>
+                        <legend class="text-xl font-semibold">{{ group.grouper.name }}</legend>
+                        {% if group.grouper.description %}
+                            <p class="mt-2 text-sm text-zinc-500">{{ group.grouper.description }}</p>
+                        {% endif %}
+                        <div class="mt-5 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                            {% for ingredient in group.list %}
+                                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-zinc-900 p-4 transition has-checked:border-amber-500 has-checked:bg-amber-500/10 hover:border-white/30">
+                                    <input type="checkbox"
+                                           name="ingredients"
+                                           value="{{ ingredient.id }}"
+                                           {% if ingredient.id in selected_ids %}checked{% endif %}
+                                           class="size-4 cursor-pointer accent-amber-500">
+                                    <span class="flex-1 text-sm font-medium">{{ ingredient.name }}</span>
+                                    {% if ingredient.is_alcoholic %}
+                                        <span class="text-xs text-zinc-500">Alcoólico</span>
+                                    {% endif %}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                {% endfor %}
+            </div>
+            <div class="sticky bottom-4 z-10 mt-12 flex flex-col gap-3 rounded-2xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-sm text-zinc-400">Selecione tudo que está disponível no seu bar.</p>
+                <div class="flex gap-3">
+                    {% if has_selection %}
+                        <a href="{% url 'cocktails:matcher' %}"
+                           class="rounded-xl border border-white/10 px-5 py-3 text-center font-semibold text-zinc-300 transition hover:border-white/30">
+                            Limpar
+                        </a>
+                    {% endif %}
+                    <button type="submit"
+                            class="cursor-pointer rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 transition hover:bg-amber-400">
+                        Descobrir drinks
+                    </button>
+                </div>
+            </div>
+        </form>
+    </section>
+    {% if has_selection %}
+        <section id="results"
+                 class="scroll-mt-24 border-t border-white/10 bg-zinc-900/30">
+            <div class="mx-auto max-w-7xl px-6 py-16">
+                <div>
+                    <p class="font-medium text-amber-400">Resultado</p>
+                    <h2 class="mt-2 text-3xl font-bold">Drinks encontrados</h2>
+                </div>
+                <section class="mt-12">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-emerald-400">Você pode preparar</h3>
+                            <p class="mt-2 text-zinc-400">Todos os ingredientes obrigatórios estão disponíveis.</p>
+                        </div>
+                        <span class="rounded-full bg-emerald-500/10 px-4 py-2 text-sm text-emerald-400">
+                            {{ available_cocktails|length }}
+                        </span>
+                    </div>
+                    {% if available_cocktails %}
+                        <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            {% for result in available_cocktails %}
+                                <article class="group overflow-hidden rounded-2xl border border-emerald-500/20 bg-zinc-900 transition hover:-translate-y-1 hover:border-emerald-500/60">
+                                    <a href="{{ result.cocktail.get_absolute_url }}">
+                                        {% if result.cocktail.image %}
+                                            <img src="{{ result.cocktail.image.url }}"
+                                                 alt="Drink {{ result.cocktail.name }}"
+                                                 class="aspect-[4/3] w-full object-cover">
+                                        {% else %}
+                                            <div class="flex aspect-[4/3] items-center justify-center bg-emerald-500/10">
+                                                <span class="text-7xl" aria-hidden="true">🍸</span>
+                                            </div>
+                                        {% endif %}
+                                        <div class="p-6">
+                                            <span class="text-sm font-medium text-emerald-400">Pronto para preparar</span>
+                                            <h4 class="mt-2 text-xl font-semibold group-hover:text-amber-400">{{ result.cocktail.name }}</h4>
+                                            <p class="mt-3 line-clamp-2 text-sm leading-6 text-zinc-400">{{ result.cocktail.description }}</p>
+                                            <span class="mt-5 inline-block text-sm font-semibold text-amber-400">Ver receita →</span>
+                                        </div>
+                                    </a>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="mt-6 rounded-2xl border border-dashed border-white/15 p-8 text-center">
+                            <p class="text-zinc-400">
+                                Você ainda não possui todos os ingredientes
+                                obrigatórios de uma receita.
+                            </p>
+                        </div>
+                    {% endif %}
+                </section>
+                <section class="mt-16 border-t border-white/10 pt-12">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-amber-400">Falta apenas um ingrediente</h3>
+                            <p class="mt-2 text-zinc-400">Adicione um item para completar estas receitas.</p>
+                        </div>
+                        <span class="rounded-full bg-amber-500/10 px-4 py-2 text-sm text-amber-400">
+                            {{ missing_one_cocktails|length }}
+                        </span>
+                    </div>
+                    {% if missing_one_cocktails %}
+                        <div class="mt-6 grid gap-4 md:grid-cols-2">
+                            {% for result in missing_one_cocktails %}
+                                <article class="rounded-2xl border border-white/10 bg-zinc-900 p-6">
+                                    <div class="flex items-start justify-between gap-4">
+                                        <div>
+                                            <h4 class="text-lg font-semibold">
+                                                <a href="{{ result.cocktail.get_absolute_url }}"
+                                                   class="hover:text-amber-400">
+                                                    {{ result.cocktail.name }}
+                                                </a>
+                                            </h4>
+                                            <p class="mt-2 text-sm text-zinc-500">Falta:</p>
+                                        </div>
+                                        <span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs text-amber-400">1 ingrediente</span>
+                                    </div>
+                                    <div class="mt-4">
+                                        {% for ingredient in result.missing_ingredients %}
+                                            <a href="{{ ingredient.get_absolute_url }}"
+                                               class="inline-block rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-sm text-amber-400 transition hover:border-amber-500">
+                                                {{ ingredient.name }}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="mt-6 text-zinc-500">Nenhuma receita está a apenas um ingrediente de distância.</p>
+                    {% endif %}
+                </section>
+                {% if missing_many_cocktails %}
+                    <section class="mt-16 border-t border-white/10 pt-12">
+                        <div class="flex items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-2xl font-bold">Faltam alguns ingredientes</h3>
+                                <p class="mt-2 text-zinc-400">Receitas ordenadas pela quantidade de itens ausentes.</p>
+                            </div>
+                            <span class="rounded-full bg-white/5 px-4 py-2 text-sm text-zinc-400">
+                                {{ missing_many_cocktails|length }}
+                            </span>
+                        </div>
+                        <div class="mt-6 grid gap-4 md:grid-cols-2">
+                            {% for result in missing_many_cocktails %}
+                                <article class="rounded-2xl border border-white/10 bg-zinc-900 p-6">
+                                    <div class="flex items-start justify-between gap-4">
+                                        <h4 class="text-lg font-semibold">
+                                            <a href="{{ result.cocktail.get_absolute_url }}"
+                                               class="hover:text-amber-400">
+                                                {{ result.cocktail.name }}
+                                            </a>
+                                        </h4>
+                                        <span class="shrink-0 text-sm text-zinc-500">Faltam {{ result.missing_count }}</span>
+                                    </div>
+                                    <div class="mt-4 flex flex-wrap gap-2">
+                                        {% for ingredient in result.missing_ingredients %}
+                                            <a href="{{ ingredient.get_absolute_url }}"
+                                               class="rounded-lg bg-white/5 px-3 py-2 text-sm text-zinc-400 transition hover:text-amber-400">
+                                                {{ ingredient.name }}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+{% endblock content %}

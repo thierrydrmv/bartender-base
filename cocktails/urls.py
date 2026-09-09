@@ -7,6 +7,11 @@ app_name = "cocktails"
 urlpatterns = [
     path("", views.cocktail_list, name="list"),
     path(
+        "what-can-i-make/",
+        views.cocktail_matcher,
+        name="matcher",
+    ),
+    path(
         "equipment/",
         views.equipment_list,
         name="equipment-list",

@@ -3,7 +3,14 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 
-from .models import Cocktail, Equipment, Ingredient, IngredientCategory, Technique
+from .models import (
+    Cocktail,
+    CocktailIngredient,
+    Equipment,
+    Ingredient,
+    IngredientCategory,
+    Technique,
+)
 
 
 def cocktail_list(request):
@@ -207,5 +214,127 @@ def equipment_detail(request, slug):
     return render(
         request,
         "cocktails/equipment_detail.html",
+        context,
+    )
+
+
+def cocktail_matcher(request):
+    selected_values = request.GET.getlist("ingredients")
+
+    requested_ids: set[int] = {int(value) for value in selected_values if value.isdigit()}
+
+    ingredients = Ingredient.objects.select_related("category").order_by(
+        "category__name",
+        "name",
+    )
+
+    selected_ingredients = ingredients.filter(
+        pk__in=requested_ids,
+    )
+
+    selected_ids: set[int] = set(
+        selected_ingredients.values_list(
+            "pk",
+            flat=True,
+        )
+    )
+
+    has_selection = bool(selected_ids)
+
+    available_cocktails = []
+    missing_one_cocktails = []
+    missing_many_cocktails = []
+
+    if has_selection:
+        cocktails = list(
+            Cocktail.objects.filter(
+                is_published=True,
+            )
+            .select_related("glassware")
+            .prefetch_related("techniques")
+            .order_by("name")
+        )
+
+        required_items = (
+            CocktailIngredient.objects.filter(
+                cocktail__in=cocktails,
+                is_optional=False,
+            )
+            .select_related(
+                "cocktail",
+                "ingredient",
+            )
+            .order_by(
+                "cocktail__name",
+                "order",
+            )
+        )
+
+        required_items_by_cocktail: dict[
+            int,
+            list[CocktailIngredient],
+        ] = {}
+
+        for item in required_items:
+            cocktail_id = item.cocktail.pk
+
+            if cocktail_id is None:
+                continue
+
+            required_items_by_cocktail.setdefault(
+                cocktail_id,
+                [],
+            ).append(item)
+
+        for cocktail in cocktails:
+            cocktail_id = cocktail.pk
+
+            if cocktail_id is None:
+                continue
+
+            cocktail_required_items = required_items_by_cocktail.get(
+                cocktail_id,
+                [],
+            )
+
+            # Impede que cocktails sem ingredientes obrigatórios
+            # sejam classificados como disponíveis.
+            if not cocktail_required_items:
+                continue
+
+            missing_ingredients = [
+                item.ingredient
+                for item in cocktail_required_items
+                if item.ingredient.pk not in selected_ids
+            ]
+
+            result = {
+                "cocktail": cocktail,
+                "missing_ingredients": missing_ingredients,
+                "missing_count": len(missing_ingredients),
+            }
+
+            if not missing_ingredients:
+                available_cocktails.append(result)
+            elif len(missing_ingredients) == 1:
+                missing_one_cocktails.append(result)
+            else:
+                missing_many_cocktails.append(result)
+
+        missing_many_cocktails.sort(key=lambda result: result["missing_count"])
+
+    context = {
+        "ingredients": ingredients,
+        "selected_ids": selected_ids,
+        "selected_ingredients": selected_ingredients,
+        "has_selection": has_selection,
+        "available_cocktails": available_cocktails,
+        "missing_one_cocktails": missing_one_cocktails,
+        "missing_many_cocktails": missing_many_cocktails,
+    }
+
+    return render(
+        request,
+        "cocktails/cocktail_matcher.html",
         context,
     )
