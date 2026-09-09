@@ -586,3 +586,19 @@ class CocktailMatcherTests(TestCase):
             response,
             f'action="{expected_action}"',
         )
+
+    def test_missing_many_requires_at_least_one_required_ingredient(
+        self,
+    ):
+        response = self.client.get(
+            reverse("cocktails:matcher"),
+            {
+                "ingredients": [self.mint.pk],
+            },
+        )
+
+        self.assertTrue(response.context["has_selection"])
+        self.assertEqual(
+            response.context["missing_many_cocktails"],
+            [],
+        )

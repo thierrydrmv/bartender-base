@@ -302,6 +302,14 @@ def cocktail_matcher(request):
             if not cocktail_required_items:
                 continue
 
+            required_ingredient_ids = {
+                item.ingredient.pk
+                for item in cocktail_required_items
+                if item.ingredient.pk is not None
+            }
+
+            matched_ingredient_count = len(required_ingredient_ids & selected_ids)
+
             missing_ingredients = [
                 item.ingredient
                 for item in cocktail_required_items
@@ -312,13 +320,14 @@ def cocktail_matcher(request):
                 "cocktail": cocktail,
                 "missing_ingredients": missing_ingredients,
                 "missing_count": len(missing_ingredients),
+                "matched_count": matched_ingredient_count,
             }
 
             if not missing_ingredients:
                 available_cocktails.append(result)
             elif len(missing_ingredients) == 1:
                 missing_one_cocktails.append(result)
-            else:
+            elif matched_ingredient_count >= 1:
                 missing_many_cocktails.append(result)
 
         missing_many_cocktails.sort(key=lambda result: result["missing_count"])
