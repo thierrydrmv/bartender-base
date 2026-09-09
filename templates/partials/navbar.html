@@ -30,9 +30,29 @@
                 Equipamentos
             </a>
         </div>
-        <a href="#learning"
-           class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-amber-400">
-            Começar agora
-        </a>
+        <div class="flex items-center gap-4">
+            {% if user.is_authenticated %}
+                <a href="{% url 'accounts:profile' %}"
+                   class="text-sm font-medium text-zinc-300 transition hover:text-amber-400">
+                    {{ user.username }}
+                </a>
+                <form action="{% url 'accounts:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="cursor-pointer rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:border-amber-400 hover:text-amber-400">
+                        Sair
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'accounts:login' %}"
+                   class="text-sm font-medium text-zinc-300 transition hover:text-amber-400">
+                    Entrar
+                </a>
+                <a href="{% url 'accounts:register' %}"
+                   class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-amber-400">
+                    Criar conta
+                </a>
+            {% endif %}
+        </div>
     </nav>
 </header>

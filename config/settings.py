@@ -38,6 +38,7 @@ ALLOWED_HOSTS = os.getenv(
 # Application definition
 
 INSTALLED_APPS = [
+    "accounts",
     "cocktails",
     "core",
     "learning",
@@ -147,3 +148,7 @@ MAILERS = {
 }
 
 TAILWIND_APP_NAME = "theme"
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "accounts:profile"
+LOGOUT_REDIRECT_URL = "home"
