@@ -570,6 +570,12 @@
       border-color: color-mix(in oklab, var(--color-emerald-500) 20%, transparent);
     }
   }
+  .border-emerald-500\/30 {
+    border-color: color-mix(in srgb, oklch(69.6% 0.17 162.48) 30%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-emerald-500) 30%, transparent);
+    }
+  }
   .border-red-500\/20 {
     border-color: color-mix(in srgb, oklch(63.7% 0.237 25.331) 20%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
@@ -955,6 +961,13 @@
       }
     }
   }
+  .hover\:border-emerald-500 {
+    &:hover {
+      @media (hover: hover) {
+        border-color: var(--color-emerald-500);
+      }
+    }
+  }
   .hover\:border-emerald-500\/60 {
     &:hover {
       @media (hover: hover) {
@@ -986,6 +999,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-amber-500);
+      }
+    }
+  }
+  .hover\:bg-emerald-500 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-emerald-500);
       }
     }
   }
@@ -1042,6 +1062,11 @@
       }
     }
   }
+  .sm\:ml-auto {
+    @media (width >= 40rem) {
+      margin-left: auto;
+    }
+  }
   .sm\:block {
     @media (width >= 40rem) {
       display: block;
@@ -1075,6 +1100,11 @@
   .sm\:py-20 {
     @media (width >= 40rem) {
       padding-block: calc(var(--spacing) * 20);
+    }
+  }
+  .sm\:text-right {
+    @media (width >= 40rem) {
+      text-align: right;
     }
   }
   .sm\:text-4xl {

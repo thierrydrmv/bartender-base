@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
@@ -78,3 +79,31 @@ class Lesson(models.Model):
             "learning:lesson-detail",
             kwargs={"slug": self.slug},
         )
+
+
+class LessonProgress(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="lesson_progress",
+    )
+    lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.CASCADE,
+        related_name="progress_records",
+    )
+    completed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-completed_at"]
+        verbose_name = "progresso da aula"
+        verbose_name_plural = "progresso das aulas"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "lesson"],
+                name="unique_user_lesson_progress",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.user} — {self.lesson}"

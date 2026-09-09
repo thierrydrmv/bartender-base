@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import LearningPath, Lesson
+from .models import LearningPath, Lesson, LessonProgress
 
 
 class LessonInline(admin.TabularInline):
@@ -125,3 +125,27 @@ class LessonAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+
+@admin.register(LessonProgress)
+class LessonProgressAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "lesson",
+        "completed_at",
+    )
+    list_filter = (
+        "lesson__learning_path",
+        "completed_at",
+    )
+    search_fields = (
+        "user__username",
+        "user__email",
+        "lesson__title",
+    )
+    list_select_related = (
+        "user",
+        "lesson",
+        "lesson__learning_path",
+    )
+    ordering = ("-completed_at",)

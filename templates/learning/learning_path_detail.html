@@ -12,6 +12,31 @@
             <p class="mt-10 font-medium text-amber-400">Trilha de aprendizado</p>
             <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">{{ learning_path.title }}</h1>
             <p class="mt-6 max-w-3xl text-lg leading-8 text-zinc-400">{{ learning_path.description }}</p>
+            {% if user.is_authenticated %}
+                <div class="mt-10 max-w-2xl rounded-2xl border border-white/10 bg-zinc-950/60 p-6">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <p class="text-sm font-medium text-zinc-300">Seu progresso</p>
+                            <p class="mt-1 text-sm text-zinc-500">
+                                {{ completed_lessons }} de {{ total_lessons }} aulas concluídas
+                            </p>
+                        </div>
+                        <strong class="text-2xl text-amber-400">{{ progress_percentage }}%</strong>
+                    </div>
+                    <div class="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
+                        <div class="h-full rounded-full bg-amber-500 transition-all"
+                             style="width: {{ progress_percentage }}%"></div>
+                    </div>
+                    {% if next_lesson %}
+                        <a href="{{ next_lesson.get_absolute_url }}"
+                           class="mt-5 inline-block text-sm font-semibold text-amber-400 hover:text-amber-300">
+                            Continuar: {{ next_lesson.title }} →
+                        </a>
+                    {% elif total_lessons %}
+                        <p class="mt-5 text-sm font-semibold text-emerald-400">✓ Trilha concluída</p>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </section>
     <section class="mx-auto max-w-5xl px-6 py-16">
@@ -35,9 +60,14 @@
                     <li>
                         <a href="{{ lesson.get_absolute_url }}"
                            class="group flex gap-5 rounded-2xl border border-white/10 bg-zinc-900 p-5 transition hover:border-amber-500/50">
-                            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10 font-semibold text-amber-400">
-                                {{ forloop.counter }}
-                            </span>
+                            {% if lesson.pk in completed_lesson_ids %}
+                                <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 font-semibold text-emerald-400"
+                                      aria-label="Aula concluída">✓</span>
+                            {% else %}
+                                <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10 font-semibold text-amber-400">
+                                    {{ forloop.counter }}
+                                </span>
+                            {% endif %}
                             <div class="min-w-0 flex-1">
                                 <div class="flex flex-col justify-between gap-2 sm:flex-row">
                                     <h3 class="font-semibold transition group-hover:text-amber-400">{{ lesson.title }}</h3>

@@ -7,7 +7,7 @@
         <header class="border-b border-white/10 bg-zinc-900/40">
             <div class="mx-auto max-w-4xl px-6 py-16">
                 <a href="{{ lesson.learning_path.get_absolute_url }}"
-                   class="text-sm font-semibold text-amber-400 hover:text-amber-300">
+                   class="text-sm font-semibold text-amber-400 transition hover:text-amber-300">
                     ← {{ lesson.learning_path.title }}
                 </a>
                 <div class="mt-10 flex flex-wrap gap-2">
@@ -17,42 +17,100 @@
                     <span class="rounded-full bg-white/5 px-3 py-1 text-sm text-zinc-400">
                         {{ lesson.reading_time }} min de leitura
                     </span>
+                    {% if is_completed %}
+                        <span class="rounded-full bg-emerald-500/10 px-3 py-1 text-sm text-emerald-400">✓ Concluída</span>
+                    {% endif %}
                 </div>
                 <h1 class="mt-6 text-4xl font-bold tracking-tight sm:text-5xl">{{ lesson.title }}</h1>
                 <p class="mt-6 text-lg leading-8 text-zinc-400">{{ lesson.summary }}</p>
+                {% if user.is_authenticated %}
+                    <form action="{% url 'learning:toggle-completion' lesson.slug %}"
+                          method="post"
+                          class="mt-8">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="cursor-pointer rounded-xl border px-5 py-3 font-semibold transition {% if is_completed %}border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-zinc-950{% else %}border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500 hover:text-zinc-950{% endif %}">
+                            {% if is_completed %}
+                                ✓ Aula concluída — desmarcar
+                            {% else %}
+                                Marcar como concluída
+                            {% endif %}
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}?next={{ request.path }}"
+                       class="mt-8 inline-block rounded-xl border border-amber-500/30 bg-amber-500/10 px-5 py-3 font-semibold text-amber-400 transition hover:bg-amber-500 hover:text-zinc-950">
+                        Entrar para registrar progresso
+                    </a>
+                {% endif %}
             </div>
         </header>
         <div class="mx-auto max-w-4xl px-6 py-16">
-            <div class="whitespace-pre-line text-lg leading-9 text-zinc-300">{{ lesson.content }}</div>
-            {% if techniques %}
+            <section aria-labelledby="lesson-content-title">
+                <h2 id="lesson-content-title" class="sr-only">Conteúdo da aula</h2>
+                <div class="whitespace-pre-line text-lg leading-9 text-zinc-300">{{ lesson.content }}</div>
+            </section>
+            {% if cocktails or ingredients or techniques or equipment %}
                 <section class="mt-16 border-t border-white/10 pt-10">
-                    <h2 class="text-2xl font-bold">Técnicas relacionadas</h2>
-                    <div class="mt-6 flex flex-wrap gap-3">
-                        {% for technique in techniques %}
-                            <a href="{{ technique.get_absolute_url }}"
-                               class="rounded-xl border border-white/10 bg-zinc-900 px-4 py-3 text-sm transition hover:border-amber-500 hover:text-amber-400">
-                                {{ technique.name }}
-                            </a>
-                        {% endfor %}
+                    <p class="font-medium text-amber-400">Explore o conteúdo</p>
+                    <h2 class="mt-2 text-2xl font-bold">Itens relacionados à aula</h2>
+                    <div class="mt-8 grid gap-8 md:grid-cols-2">
+                        {% if cocktails %}
+                            <section>
+                                <h3 class="font-semibold text-zinc-200">Drinks</h3>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    {% for cocktail in cocktails %}
+                                        <a href="{{ cocktail.get_absolute_url }}"
+                                           class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                                            🍸 {{ cocktail.name }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </section>
+                        {% endif %}
+                        {% if ingredients %}
+                            <section>
+                                <h3 class="font-semibold text-zinc-200">Ingredientes</h3>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    {% for ingredient in ingredients %}
+                                        <a href="{{ ingredient.get_absolute_url }}"
+                                           class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                                            🍋 {{ ingredient.name }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </section>
+                        {% endif %}
+                        {% if techniques %}
+                            <section>
+                                <h3 class="font-semibold text-zinc-200">Técnicas</h3>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    {% for technique in techniques %}
+                                        <a href="{{ technique.get_absolute_url }}"
+                                           class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                                            🧊 {{ technique.name }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </section>
+                        {% endif %}
+                        {% if equipment %}
+                            <section>
+                                <h3 class="font-semibold text-zinc-200">Equipamentos</h3>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    {% for item in equipment %}
+                                        <a href="{{ item.get_absolute_url }}"
+                                           class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
+                                            🧰 {{ item.name }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </section>
+                        {% endif %}
                     </div>
                 </section>
             {% endif %}
-            {% if cocktails %}
-                <section class="mt-16 border-t border-white/10 pt-10">
-                    <h2 class="text-2xl font-bold">Drinks relacionados</h2>
-                    <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                        {% for cocktail in cocktails %}
-                            <a href="{{ cocktail.get_absolute_url }}"
-                               class="group rounded-2xl border border-white/10 bg-zinc-900 p-5 transition hover:border-amber-500/50">
-                                <h3 class="font-semibold group-hover:text-amber-400">{{ cocktail.name }}</h3>
-                                <p class="mt-2 line-clamp-2 text-sm text-zinc-400">{{ cocktail.description }}</p>
-                                <span class="mt-4 inline-block text-sm font-semibold text-amber-400">Ver receita →</span>
-                            </a>
-                        {% endfor %}
-                    </div>
-                </section>
-            {% endif %}
-            <nav class="mt-16 grid gap-4 border-t border-white/10 pt-10 sm:grid-cols-2"
+            <nav class="mt-16 flex flex-col gap-4 border-t border-white/10 pt-10 sm:flex-row"
                  aria-label="Navegação entre aulas">
                 {% if previous_lesson %}
                     <a href="{{ previous_lesson.get_absolute_url }}"
@@ -60,77 +118,21 @@
                         <span class="text-sm text-zinc-500">← Aula anterior</span>
                         <strong class="mt-2 block">{{ previous_lesson.title }}</strong>
                     </a>
-                {% else %}
-                    {% comment %} <div></div> {% endcomment %}
                 {% endif %}
                 {% if next_lesson %}
                     <a href="{{ next_lesson.get_absolute_url }}"
-                       class="rounded-2xl border border-white/10 bg-zinc-900 p-5 text-right transition hover:border-amber-500/50">
+                       class="rounded-2xl border border-white/10 bg-zinc-900 p-5 transition hover:border-amber-500/50 sm:ml-auto sm:text-right">
                         <span class="text-sm text-zinc-500">Próxima aula →</span>
                         <strong class="mt-2 block">{{ next_lesson.title }}</strong>
+                    </a>
+                {% elif is_completed %}
+                    <a href="{{ lesson.learning_path.get_absolute_url }}"
+                       class="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-5 text-emerald-400 transition hover:border-emerald-500 sm:ml-auto sm:text-right">
+                        <span class="text-sm">Última aula concluída</span>
+                        <strong class="mt-2 block">Voltar para a trilha →</strong>
                     </a>
                 {% endif %}
             </nav>
         </div>
     </article>
-    {% if cocktails or ingredients or techniques or equipment %}
-        <section class="mt-16 border-t border-white/10 pt-10">
-            <p class="font-medium text-amber-400">Explore o conteúdo</p>
-            <h2 class="mt-2 text-2xl font-bold">Itens relacionados à aula</h2>
-            <div class="mt-8 grid gap-8 md:grid-cols-2">
-                {% if cocktails %}
-                    <section>
-                        <h3 class="font-semibold text-zinc-200">Drinks</h3>
-                        <div class="mt-3 flex flex-wrap gap-2">
-                            {% for cocktail in cocktails %}
-                                <a href="{{ cocktail.get_absolute_url }}"
-                                   class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
-                                    🍸 {{ cocktail.name }}
-                                </a>
-                            {% endfor %}
-                        </div>
-                    </section>
-                {% endif %}
-                {% if ingredients %}
-                    <section>
-                        <h3 class="font-semibold text-zinc-200">Ingredientes</h3>
-                        <div class="mt-3 flex flex-wrap gap-2">
-                            {% for ingredient in ingredients %}
-                                <a href="{{ ingredient.get_absolute_url }}"
-                                   class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
-                                    🍋 {{ ingredient.name }}
-                                </a>
-                            {% endfor %}
-                        </div>
-                    </section>
-                {% endif %}
-                {% if techniques %}
-                    <section>
-                        <h3 class="font-semibold text-zinc-200">Técnicas</h3>
-                        <div class="mt-3 flex flex-wrap gap-2">
-                            {% for technique in techniques %}
-                                <a href="{{ technique.get_absolute_url }}"
-                                   class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
-                                    🧊 {{ technique.name }}
-                                </a>
-                            {% endfor %}
-                        </div>
-                    </section>
-                {% endif %}
-                {% if equipment %}
-                    <section>
-                        <h3 class="font-semibold text-zinc-200">Equipamentos</h3>
-                        <div class="mt-3 flex flex-wrap gap-2">
-                            {% for item in equipment %}
-                                <a href="{{ item.get_absolute_url }}"
-                                   class="rounded-lg border border-white/10 bg-zinc-900 px-4 py-2 text-sm transition hover:border-amber-500 hover:text-amber-400">
-                                    🧰 {{ item.name }}
-                                </a>
-                            {% endfor %}
-                        </div>
-                    </section>
-                {% endif %}
-            </div>
-        </section>
-    {% endif %}
 {% endblock content %}

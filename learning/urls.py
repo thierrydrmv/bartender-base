@@ -16,6 +16,11 @@ urlpatterns = [
         name="path-detail",
     ),
     path(
+        "aulas/<slug:slug>/toggle-completion/",
+        views.toggle_lesson_completion,
+        name="toggle-completion",
+    ),
+    path(
         "aulas/<slug:slug>/",
         views.lesson_detail,
         name="lesson-detail",
