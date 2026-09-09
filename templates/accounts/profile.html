@@ -1,63 +1,177 @@
 {% extends "base.html" %}
 {% block title %}
-    Meu perfil | Bartender Base
+    Meu painel | Bartender Base
 {% endblock title %}
 {% block content %}
     <section class="border-b border-white/10 bg-zinc-900/40">
         <div class="mx-auto max-w-7xl px-6 py-16">
-            <p class="font-medium text-amber-400">Minha conta</p>
-            <h1 class="mt-3 text-4xl font-bold">Olá, {{ user.username }}</h1>
-            <p class="mt-4 text-zinc-400">{{ user.email }}</p>
+            <p class="font-medium text-amber-400">Painel do estudante</p>
+            <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">Olá, {{ user.username }}</h1>
+            <p class="mt-4 text-zinc-400">Continue aprendendo e acompanhe seu progresso.</p>
         </div>
     </section>
-    <section class="mx-auto max-w-7xl px-6 py-16">
-        <div class="flex items-end justify-between gap-4">
-            <div>
-                <p class="font-medium text-amber-400">Minha coleção</p>
-                <h2 class="mt-2 text-3xl font-bold">Cocktails favoritos</h2>
+    <div class="mx-auto max-w-7xl space-y-16 px-6 py-16">
+        <section aria-labelledby="summary-title">
+            <h2 id="summary-title" class="sr-only">Resumo da conta</h2>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <article class="rounded-2xl border border-white/10 bg-zinc-900 p-6">
+                    <p class="text-sm text-zinc-500">Aulas concluídas</p>
+                    <strong class="mt-2 block text-3xl text-amber-400">{{ completed_lesson_count }}</strong>
+                </article>
+                <article class="rounded-2xl border border-white/10 bg-zinc-900 p-6">
+                    <p class="text-sm text-zinc-500">Trilhas iniciadas</p>
+                    <strong class="mt-2 block text-3xl text-amber-400">{{ started_paths|length }}</strong>
+                </article>
+                <article class="rounded-2xl border border-white/10 bg-zinc-900 p-6">
+                    <p class="text-sm text-zinc-500">Cocktails favoritos</p>
+                    <strong class="mt-2 block text-3xl text-amber-400">{{ favorite_count }}</strong>
+                </article>
             </div>
-            <span class="text-sm text-zinc-500">
-                {{ favorite_cocktails|length }}
-                {% if favorite_cocktails|length == 1 %}
-                    favorito
-                {% else %}
-                    favoritos
-                {% endif %}
-            </span>
-        </div>
-        {% if favorite_cocktails %}
-            <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {% for cocktail in favorite_cocktails %}
-                    <article class="group overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 transition hover:-translate-y-1 hover:border-amber-500/50">
-                        <a href="{{ cocktail.get_absolute_url }}">
-                            {% if cocktail.image %}
-                                <img src="{{ cocktail.image.url }}"
-                                     alt="Drink {{ cocktail.name }}"
-                                     class="aspect-[4/3] w-full object-cover">
-                            {% else %}
-                                <div class="flex aspect-[4/3] items-center justify-center bg-amber-500/10">
-                                    <span class="text-7xl" aria-hidden="true">🍸</span>
-                                </div>
-                            {% endif %}
-                            <div class="p-6">
-                                <h3 class="text-xl font-semibold group-hover:text-amber-400">{{ cocktail.name }}</h3>
-                                <p class="mt-3 line-clamp-2 text-sm leading-6 text-zinc-400">{{ cocktail.description }}</p>
-                                <span class="mt-5 inline-block text-sm font-semibold text-amber-400">Ver receita →</span>
-                            </div>
-                        </a>
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="mt-8 rounded-2xl border border-d border-white/15 px-6 py-16 text-center">
-                <span class="text-5xl" aria-hidden="true">♡</span>
-                <h3 class="mt-5 text-xl font-semibold">Você ainda não possui favoritos</h3>
-                <p class="mt-2 text-zinc-400">Explore o catálogo e salve as receitas que deseja preparar.</p>
-                <a href="{% url 'cocktails:list' %}"
-                   class="mt-6 inline-block rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 hover:bg-amber-400">
-                    Explorar cocktails
+        </section>
+        <section aria-labelledby="next-lesson-title">
+            <p class="font-medium text-amber-400">Continue aprendendo</p>
+            <h2 id="next-lesson-title" class="mt-2 text-3xl font-bold">Próxima aula</h2>
+            {% if next_lesson %}
+                <article class="mt-8 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6 sm:flex sm:items-center sm:justify-between sm:gap-8">
+                    <div>
+                        <p class="text-sm text-amber-400">{{ next_lesson.learning_path.title }}</p>
+                        <h3 class="mt-2 text-xl font-semibold">{{ next_lesson.title }}</h3>
+                        <p class="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">{{ next_lesson.summary }}</p>
+                        <p class="mt-3 text-sm text-zinc-500">{{ next_lesson.reading_time }} min de leitura</p>
+                    </div>
+                    <a href="{{ next_lesson.get_absolute_url }}"
+                       class="mt-6 inline-block shrink-0 rounded-xl bg-amber-500 px-6 py-3 text-center font-semibold text-zinc-950 transition hover:bg-amber-400 sm:mt-0">
+                        Continuar aula →
+                    </a>
+                </article>
+            {% else %}
+                <div class="mt-8 rounded-2xl border border-dashed border-white/15 px-6 py-12 text-center">
+                    <p class="text-zinc-400">Todas as aulas disponíveis foram concluídas.</p>
+                    <a href="{% url 'learning:path-list' %}"
+                       class="mt-5 inline-block font-semibold text-amber-400">Explorar trilhas</a>
+                </div>
+            {% endif %}
+        </section>
+        <section aria-labelledby="path-progress-title">
+            <div class="flex items-end justify-between gap-4">
+                <div>
+                    <p class="font-medium text-amber-400">Aprendizado</p>
+                    <h2 id="path-progress-title" class="mt-2 text-3xl font-bold">Trilhas em andamento</h2>
+                </div>
+                <a href="{% url 'learning:path-list' %}"
+                   class="text-sm font-semibold text-amber-400 hover:text-amber-300">
+                    Ver todas →
                 </a>
             </div>
+            {% if started_paths %}
+                <div class="mt-8 grid gap-6 md:grid-cols-2">
+                    {% for item in started_paths %}
+                        <article class="rounded-2xl border border-white/10 bg-zinc-900 p-6">
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <h3 class="text-lg font-semibold">
+                                        <a href="{{ item.path.get_absolute_url }}"
+                                           class="hover:text-amber-400">{{ item.path.title }}</a>
+                                    </h3>
+                                    <p class="mt-2 text-sm text-zinc-500">
+                                        {{ item.completed_count }} de
+                                        {{ item.total_count }} aulas concluídas
+                                    </p>
+                                </div>
+                                <strong class="{% if item.is_completed %}text-emerald-400{% else %}text-amber-400{% endif %}">
+                                    {{ item.progress_percentage }}%
+                                </strong>
+                            </div>
+                            <label for="path-progress-{{ item.path.pk }}" class="sr-only">
+                                Progresso em {{ item.path.title }}
+                            </label>
+                            <progress id="path-progress-{{ item.path.pk }}"
+                                      value="{{ item.progress_percentage }}"
+                                      max="100"
+                                      class="mt-5 h-2 w-full accent-amber-500">
+                                {{ item.progress_percentage }}%
+                            </progress>
+                            {% if item.next_lesson %}
+                                <a href="{{ item.next_lesson.get_absolute_url }}"
+                                   class="mt-5 inline-block text-sm font-semibold text-amber-400 hover:text-amber-300">
+                                    Continuar: {{ item.next_lesson.title }} →
+                                </a>
+                            {% else %}
+                                <p class="mt-5 text-sm font-semibold text-emerald-400">✓ Trilha concluída</p>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="mt-8 rounded-2xl border border-dashed border-white/15 px-6 py-12 text-center">
+                    <p class="text-zinc-400">Você ainda não iniciou uma trilha.</p>
+                    <a href="{% url 'learning:path-list' %}"
+                       class="mt-5 inline-block rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 hover:bg-amber-400">
+                        Começar a aprender
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+        <section aria-labelledby="favorites-title">
+            <div class="flex items-end justify-between gap-4">
+                <div>
+                    <p class="font-medium text-amber-400">Minha coleção</p>
+                    <h2 id="favorites-title" class="mt-2 text-3xl font-bold">Cocktails favoritos</h2>
+                </div>
+                <a href="{% url 'cocktails:list' %}"
+                   class="text-sm font-semibold text-amber-400 hover:text-amber-300">
+                    Explorar cocktails →
+                </a>
+            </div>
+            {% if favorite_cocktails %}
+                <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {% for cocktail in favorite_cocktails|slice:":3" %}
+                        <article class="group overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 transition hover:-translate-y-1 hover:border-amber-500/50">
+                            <a href="{{ cocktail.get_absolute_url }}">
+                                {% if cocktail.image %}
+                                    <img src="{{ cocktail.image.url }}"
+                                         alt="Drink {{ cocktail.name }}"
+                                         class="aspect-[4/3] w-full object-cover">
+                                {% else %}
+                                    <div class="flex aspect-[4/3] items-center justify-center bg-amber-500/10">
+                                        <span class="text-7xl" aria-hidden="true">🍸</span>
+                                    </div>
+                                {% endif %}
+                                <div class="p-6">
+                                    <h3 class="text-xl font-semibold group-hover:text-amber-400">{{ cocktail.name }}</h3>
+                                    <p class="mt-3 line-clamp-2 text-sm leading-6 text-zinc-400">{{ cocktail.description }}</p>
+                                    <span class="mt-5 inline-block text-sm font-semibold text-amber-400">Ver receita →</span>
+                                </div>
+                            </a>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="mt-8 rounded-2xl border border-dashed border-white/15 px-6 py-12 text-center">
+                    <p class="text-zinc-400">Você ainda não possui cocktails favoritos.</p>
+                </div>
+            {% endif %}
+        </section>
+        {% if recent_progress %}
+            <section aria-labelledby="recent-lessons-title">
+                <p class="font-medium text-amber-400">Histórico</p>
+                <h2 id="recent-lessons-title" class="mt-2 text-3xl font-bold">Aulas concluídas recentemente</h2>
+                <div class="mt-8 divide-y divide-white/10 rounded-2xl border border-white/10 bg-zinc-900 px-6">
+                    {% for progress in recent_progress %}
+                        <a href="{{ progress.lesson.get_absolute_url }}"
+                           class="flex items-center justify-between gap-6 py-5 transition hover:text-amber-400">
+                            <div>
+                                <h3 class="font-semibold">{{ progress.lesson.title }}</h3>
+                                <p class="mt-1 text-sm text-zinc-500">{{ progress.lesson.learning_path.title }}</p>
+                            </div>
+                            <time datetime="{{ progress.completed_at|date:'c' }}"
+                                  class="shrink-0 text-sm text-zinc-500">
+                                {{ progress.completed_at|date:"d/m/Y" }}
+                            </time>
+                        </a>
+                    {% endfor %}
+                </div>
+            </section>
         {% endif %}
-    </section>
+    </div>
 {% endblock content %}
