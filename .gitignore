@@ -36,7 +36,10 @@ htmlcov/
 
 # Arquivos enviados pelos usuários
 media/
+staticfiles/
 
 # Ruff
 .ruff_cache/
-staticfiles/
+
+backup.json
+gunicorn.log
