@@ -56,7 +56,8 @@
             <div class="flex items-end justify-between gap-4">
                 <div>
                     <p class="font-medium text-amber-400">Aprendizado</p>
-                    <h2 id="path-progress-title" class="mt-2 text-3xl font-bold">Trilhas em andamento</h2>
+                    <h2 id="path-progress-title"
+                        class="mt-2 text-3xl font-bold">Trilhas em andamento</h2>
                 </div>
                 <a href="{% url 'learning:path-list' %}"
                    class="text-sm font-semibold text-amber-400 hover:text-amber-300">
@@ -116,7 +117,8 @@
             <div class="flex items-end justify-between gap-4">
                 <div>
                     <p class="font-medium text-amber-400">Minha coleção</p>
-                    <h2 id="favorites-title" class="mt-2 text-3xl font-bold">Cocktails favoritos</h2>
+                    <h2 id="favorites-title"
+                        class="mt-2 text-3xl font-bold">Cocktails favoritos</h2>
                 </div>
                 <a href="{% url 'cocktails:list' %}"
                    class="text-sm font-semibold text-amber-400 hover:text-amber-300">
@@ -155,7 +157,8 @@
         {% if recent_progress %}
             <section aria-labelledby="recent-lessons-title">
                 <p class="font-medium text-amber-400">Histórico</p>
-                <h2 id="recent-lessons-title" class="mt-2 text-3xl font-bold">Aulas concluídas recentemente</h2>
+                <h2 id="recent-lessons-title"
+                    class="mt-2 text-3xl font-bold">Aulas concluídas recentemente</h2>
                 <div class="mt-8 divide-y divide-white/10 rounded-2xl border border-white/10 bg-zinc-900 px-6">
                     {% for progress in recent_progress %}
                         <a href="{{ progress.lesson.get_absolute_url }}"

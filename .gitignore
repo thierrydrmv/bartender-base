@@ -39,3 +39,4 @@ media/
 
 # Ruff
 .ruff_cache/
+staticfiles/

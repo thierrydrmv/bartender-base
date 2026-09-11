@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -25,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.environ["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
@@ -34,6 +35,15 @@ ALLOWED_HOSTS = os.getenv(
     "127.0.0.1,localhost",
 ).split(",")
 
+render_hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+
+if render_hostname:
+    ALLOWED_HOSTS.append(render_hostname)
+
+CSRF_TRUSTED_ORIGINS = []
+
+if render_hostname:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{render_hostname}")
 
 # Application definition
 
@@ -49,11 +59,13 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "cloudinary",
     "django.contrib.staticfiles",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -85,16 +97,29 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD", ""),
-        "HOST": os.getenv("DB_HOST", "localhost"),
-        "PORT": os.getenv("DB_PORT", "5432"),
+database_url = os.getenv("DATABASE_URL")
+
+if database_url:
+    # Production: Neon
+    DATABASES = {
+        "default": dj_database_url.parse(
+            database_url,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    # Development: PostgreSQL local
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME"),
+            "USER": os.getenv("DB_USER"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": os.getenv("DB_HOST", "localhost"),
+            "PORT": os.getenv("DB_PORT", "5432"),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
@@ -136,7 +161,16 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
@@ -163,3 +197,9 @@ DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL",
     "Bartender Base <noreply@bartenderbase.local>",
 )
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
