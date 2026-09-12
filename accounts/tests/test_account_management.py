@@ -113,3 +113,82 @@ class AccountManagementTests(TestCase):
             "Redefinição de senha",
             mail.outbox[0].subject,
         )
+
+
+class RegisterViewTests(TestCase):
+    def test_register_page_returns_success(self):
+        response = self.client.get(
+            reverse("accounts:register"),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/register.html")
+        self.assertIn("form", response.context)
+
+    def test_user_can_register(self):
+        response = self.client.post(
+            reverse("accounts:register"),
+            {
+                "username": "new-user",
+                "email": "NEW-USER@EXAMPLE.COM",
+                "password1": "Strong-password-123",
+                "password2": "Strong-password-123",
+            },
+        )
+
+        self.assertRedirects(
+            response,
+            reverse("accounts:profile"),
+        )
+
+        user = User.objects.get(username="new-user")
+
+        self.assertEqual(user.email, "new-user@example.com")
+        self.assertTrue(user.check_password("Strong-password-123"))
+
+    def test_user_is_authenticated_after_registration(self):
+        response = self.client.post(
+            reverse("accounts:register"),
+            {
+                "username": "new-user",
+                "email": "new-user@example.com",
+                "password1": "Strong-password-123",
+                "password2": "Strong-password-123",
+            },
+        )
+
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+
+    def test_invalid_registration_displays_form_errors(self):
+        response = self.client.post(
+            reverse("accounts:register"),
+            {
+                "username": "new-user",
+                "email": "invalid-email",
+                "password1": "Strong-password-123",
+                "password2": "Different-password-456",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/register.html")
+        self.assertIn("email", response.context["form"].errors)
+        self.assertIn("password2", response.context["form"].errors)
+        self.assertFalse(User.objects.filter(username="new-user").exists())
+
+    def test_authenticated_user_is_redirected_from_register(self):
+        user = User.objects.create_user(
+            username="authenticated-user",
+            email="authenticated@example.com",
+            password="Strong-password-123",
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(
+            reverse("accounts:register"),
+        )
+
+        self.assertRedirects(
+            response,
+            reverse("accounts:profile"),
+        )

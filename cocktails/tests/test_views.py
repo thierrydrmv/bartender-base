@@ -602,3 +602,199 @@ class CocktailMatcherTests(TestCase):
             response.context["missing_many_cocktails"],
             [],
         )
+
+
+class CatalogListViewTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.category = IngredientCategory.objects.create(
+            name="Spirits",
+            slug="spirits",
+        )
+        cls.other_category = IngredientCategory.objects.create(
+            name="Fruit",
+            slug="fruit",
+        )
+
+        cls.ingredient = Ingredient.objects.create(
+            name="Gin",
+            slug="gin",
+            description="A distilled spirit.",
+            category=cls.category,
+        )
+        cls.other_ingredient = Ingredient.objects.create(
+            name="Lemon",
+            slug="lemon",
+            description="A citrus fruit.",
+            category=cls.other_category,
+        )
+
+        cls.technique = Technique.objects.create(
+            name="Shake",
+            slug="shake",
+            description="Shake the ingredients with ice.",
+        )
+        cls.other_technique = Technique.objects.create(
+            name="Stir",
+            slug="stir",
+            description="Stir the ingredients with ice.",
+        )
+
+        cls.equipment = Equipment.objects.create(
+            name="Shaker",
+            slug="shaker",
+            description="Used to shake cocktails.",
+        )
+        cls.other_equipment = Equipment.objects.create(
+            name="Bar spoon",
+            slug="bar-spoon",
+            description="Used to stir cocktails.",
+        )
+
+        cls.glassware = Glassware.objects.create(
+            name="Coupe",
+            slug="coupe",
+            description="Classic cocktail glass.",
+        )
+
+        cls.non_alcoholic_cocktail = Cocktail.objects.create(
+            name="Citrus Cooler",
+            slug="citrus-cooler",
+            description="A non-alcoholic citrus drink.",
+            instructions="Build over ice.",
+            preparation_time=5,
+            glassware=cls.glassware,
+            is_alcoholic=False,
+            is_published=True,
+        )
+
+        cls.alcoholic_cocktail = Cocktail.objects.create(
+            name="Gin Cocktail",
+            slug="gin-cocktail",
+            description="A cocktail made with gin.",
+            instructions="Shake and strain.",
+            preparation_time=5,
+            glassware=cls.glassware,
+            is_alcoholic=True,
+            is_published=True,
+        )
+
+    def test_cocktail_list_filters_non_alcoholic_drinks(self):
+        response = self.client.get(
+            reverse("cocktails:list"),
+            {"type": "non_alcoholic"},
+        )
+
+        cocktails = response.context["page"].object_list
+
+        self.assertIn(self.non_alcoholic_cocktail, cocktails)
+        self.assertNotIn(self.alcoholic_cocktail, cocktails)
+        self.assertEqual(
+            response.context["selected_type"],
+            "non_alcoholic",
+        )
+
+    def test_ingredient_list_returns_success(self):
+        response = self.client.get(
+            reverse("cocktails:ingredient-list"),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "cocktails/ingredient_list.html",
+        )
+        self.assertContains(response, self.ingredient.name)
+
+    def test_ingredient_list_searches_by_name(self):
+        response = self.client.get(
+            reverse("cocktails:ingredient-list"),
+            {"q": "Gin"},
+        )
+
+        ingredients = response.context["page"].object_list
+
+        self.assertIn(self.ingredient, ingredients)
+        self.assertNotIn(self.other_ingredient, ingredients)
+        self.assertEqual(response.context["query"], "Gin")
+
+    def test_ingredient_list_filters_by_category(self):
+        response = self.client.get(
+            reverse("cocktails:ingredient-list"),
+            {"category": self.category.slug},
+        )
+
+        ingredients = response.context["page"].object_list
+
+        self.assertIn(self.ingredient, ingredients)
+        self.assertNotIn(self.other_ingredient, ingredients)
+        self.assertEqual(
+            response.context["selected_category"],
+            self.category.slug,
+        )
+
+    def test_technique_list_returns_success(self):
+        response = self.client.get(
+            reverse("cocktails:technique-list"),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "cocktails/technique_list.html",
+        )
+
+    def test_technique_list_searches_by_name(self):
+        response = self.client.get(
+            reverse("cocktails:technique-list"),
+            {"q": "Shake"},
+        )
+
+        techniques = response.context["page"].object_list
+
+        self.assertIn(self.technique, techniques)
+        self.assertNotIn(self.other_technique, techniques)
+        self.assertEqual(response.context["query"], "Shake")
+
+    def test_equipment_list_returns_success(self):
+        response = self.client.get(
+            reverse("cocktails:equipment-list"),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "cocktails/equipment_list.html",
+        )
+
+    def test_equipment_list_searches_by_name(self):
+        response = self.client.get(
+            reverse("cocktails:equipment-list"),
+            {"q": "Shaker"},
+        )
+
+        equipment = response.context["page"].object_list
+
+        self.assertIn(self.equipment, equipment)
+        self.assertNotIn(self.other_equipment, equipment)
+        self.assertEqual(response.context["query"], "Shaker")
+
+    def test_matcher_ignores_cocktail_without_required_ingredients(self):
+        response = self.client.get(
+            reverse("cocktails:matcher"),
+            {"ingredients": self.ingredient.pk},
+        )
+
+        self.assertTrue(response.context["has_selection"])
+        self.assertEqual(
+            response.context["available_cocktails"],
+            [],
+        )
+        self.assertEqual(
+            response.context["missing_one_cocktails"],
+            [],
+        )
+        self.assertEqual(
+            response.context["missing_many_cocktails"],
+            [],
+        )
