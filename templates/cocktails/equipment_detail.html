@@ -39,7 +39,7 @@
                                 {% if cocktail.image %}
                                     <img src="{{ cocktail.image.url }}"
                                          alt="{{ cocktail.name }}"
-                                         class="aspect-[4/3] w-full object-cover">
+                                         class="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105">
                                 {% else %}
                                     <div class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-amber-500/20 to-zinc-900">
                                         <span class="text-6xl" aria-hidden="true">🍸</span>
