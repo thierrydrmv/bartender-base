@@ -3,23 +3,63 @@
     {{ ingredient.name }} | Bartender Base
 {% endblock title %}
 {% block content %}
-    <section class="mx-auto max-w-5xl px-6 py-16">
-        <a href="{% url 'cocktails:ingredient-list' %}"
-           class="text-sm font-semibold text-amber-400">← Voltar para ingredientes</a>
-        <p class="mt-10 font-medium text-amber-400">{{ ingredient.category.name }}</p>
-        <h1 class="mt-3 text-4xl font-bold sm:text-5xl">{{ ingredient.name }}</h1>
-        <p class="mt-6 whitespace-pre-line leading-8 text-zinc-400">{{ ingredient.description }}</p>
-        <h2 class="mt-14 text-2xl font-bold">Drinks com este ingrediente</h2>
-        <div class="mt-6 grid gap-4 sm:grid-cols-2">
-            {% for cocktail in cocktails %}
-                <a href="{{ cocktail.get_absolute_url }}"
-                   class="rounded-xl border border-white/10 bg-zinc-900 p-5 hover:border-amber-500/50">
-                    <h3 class="font-semibold">{{ cocktail.name }}</h3>
-                    <p class="mt-2 text-sm text-zinc-400">Ver receita →</p>
-                </a>
-            {% empty %}
-                <p class="text-zinc-500">Nenhum drink publicado utiliza este ingrediente.</p>
-            {% endfor %}
-        </div>
-    </section>
+    <article>
+        <section class="border-b border-white/10 bg-zinc-900/40">
+            <div class="mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-2 lg:items-center">
+                <div>
+                    <a href="{% url 'cocktails:ingredient-list' %}"
+                       class="text-sm font-semibold text-amber-400 hover:text-amber-300">
+                        ← Voltar para ingredientes
+                    </a>
+                    <p class="mt-10 font-medium text-amber-400">{{ ingredient.category.name }}</p>
+                    <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">{{ ingredient.name }}</h1>
+                    <p class="mt-6 whitespace-pre-line leading-8 text-zinc-400">
+                        {{ ingredient.description|default:"Descrição em breve." }}
+                    </p>
+                </div>
+                <div class="overflow-hidden rounded-3xl border border-white/10 bg-zinc-900">
+                    {% if ingredient.image %}
+                        <img src="{{ ingredient.image.url }}"
+                             alt="{{ ingredient.name }}"
+                             class="aspect-[4/3] h-full w-full object-cover">
+                    {% else %}
+                        <div class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-amber-500/20 to-zinc-900">
+                            <span class="text-8xl" aria-hidden="true">🍋</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+        <section class="mx-auto max-w-6xl px-6 py-16">
+            <p class="font-medium text-amber-400">Explore receitas</p>
+            <h2 class="mt-2 text-3xl font-bold">Drinks que utilizam este ingrediente</h2>
+            {% if cocktails %}
+                <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {% for cocktail in cocktails %}
+                        <article class="overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 transition hover:border-amber-500/50">
+                            <a href="{{ cocktail.get_absolute_url }}" class="group block">
+                                {% if cocktail.image %}
+                                    <img src="{{ cocktail.image.url }}"
+                                         alt="Drink {{ cocktail.name }}"
+                                         class="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105">
+                                {% else %}
+                                    <div class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-amber-500/20 to-zinc-900">
+                                        <span class="text-6xl" aria-hidden="true">🍸</span>
+                                    </div>
+                                {% endif %}
+                                <div class="p-5">
+                                    <h3 class="font-semibold transition group-hover:text-amber-400">{{ cocktail.name }}</h3>
+                                    <p class="mt-2 text-sm text-amber-400">Ver receita →</p>
+                                </div>
+                            </a>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="mt-8 rounded-2xl border border-dashed border-white/15 px-6 py-12 text-center">
+                    <p class="text-zinc-500">Nenhum drink publicado utiliza este ingrediente.</p>
+                </div>
+            {% endif %}
+        </section>
+    </article>
 {% endblock content %}

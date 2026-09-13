@@ -40,6 +40,10 @@
                                     <img src="{{ cocktail.image.url }}"
                                          alt="{{ cocktail.name }}"
                                          class="aspect-[4/3] w-full object-cover">
+                                {% else %}
+                                    <div class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-amber-500/20 to-zinc-900">
+                                        <span class="text-6xl" aria-hidden="true">🍸</span>
+                                    </div>
                                 {% endif %}
                                 <div class="p-5">
                                     <h3 class="font-semibold">{{ cocktail.name }}</h3>
