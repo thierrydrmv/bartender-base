@@ -48,6 +48,7 @@ if render_hostname:
 # Application definition
 
 INSTALLED_APPS = [
+    "anymail",
     "accounts",
     "cocktails",
     "core",
@@ -175,28 +176,24 @@ STORAGES = {
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
-        "OPTIONS": {
-            "host": "smtp.gmail.com",
-            "port": 587,
-            "username": os.getenv("EMAIL_HOST_USER"),
-            "password": os.getenv("EMAIL_HOST_PASSWORD"),
-            "use_tls": True,
-        },
-    },
+EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
+
+ANYMAIL = {
+    "RESEND_API_KEY": os.getenv("RESEND_API_KEY"),
 }
+
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    "Bartender Base <onboarding@resend.dev>",
+)
+
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
 TAILWIND_APP_NAME = "theme"
 
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "accounts:profile"
 LOGOUT_REDIRECT_URL = "home"
-
-DEFAULT_FROM_EMAIL = os.getenv(
-    "DEFAULT_FROM_EMAIL",
-    "Bartender Base <noreply@bartenderbase.local>",
-)
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

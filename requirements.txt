@@ -10,6 +10,7 @@ coverage==7.16.0
 cssbeautifier==2.0.3
 dj-database-url==3.1.2
 Django==6.1.1
+django-anymail==15.2
 django-browser-reload==1.21.0
 django-cloudinary-storage==0.3.0
 django-filter==26.1
