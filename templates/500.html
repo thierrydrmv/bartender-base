@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}
+    Erro interno | Bartender Base
+{% endblock title %}
+{% block content %}
+    <main class="flex min-h-[70vh] items-center justify-center px-6 py-20">
+        <section class="mx-auto max-w-2xl text-center">
+            <p class="font-semibold text-amber-400">Erro 500</p>
+            <div class="mt-6 text-8xl" aria-hidden="true">🍸</div>
+            <h1 class="mt-8 text-4xl font-bold tracking-tight sm:text-5xl">Algo não saiu como esperado</h1>
+            <p class="mx-auto mt-6 max-w-xl leading-8 text-zinc-400">
+                Encontramos um problema inesperado ao preparar esta página.
+                Tente novamente em alguns instantes.
+            </p>
+            <div class="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
+                <a href="{% url 'home' %}"
+                   class="rounded-xl bg-amber-500 px-6 py-3 font-semibold text-zinc-950 transition hover:bg-amber-400">
+                    Voltar para o início
+                </a>
+                <button type="button"
+                        onclick="window.location.reload()"
+                        class="cursor-pointer rounded-xl border border-white/10 bg-zinc-900 px-6 py-3 font-semibold transition hover:border-amber-500/50 hover:text-amber-400">
+                    Tentar novamente
+                </button>
+            </div>
+            <p class="mt-10 text-sm text-zinc-500">
+                Se o problema continuar, tente acessar novamente mais tarde.
+            </p>
+        </section>
+    </main>
+{% endblock content %}
