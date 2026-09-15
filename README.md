@@ -429,18 +429,22 @@ djlint templates --reformat
 
 ## Tests and Coverage
 
-The repository contains 74 Django test cases covering:
+The repository contains 103 Django tests and currently achieves 98% coverage across the tracked application code.
 
 - catalog models and relationships;
 - published and unpublished content behavior;
-- search and filtering;
+- search, filtering, and catalog navigation;
+- cocktail, ingredient, equipment, and technique detail pages;
 - related-content links;
 - ingredient matcher classification and edge cases;
-- favorites and user isolation;
-- learning navigation;
+- favorites and user data isolation;
+- learning path and lesson navigation;
 - lesson completion and per-user progress;
 - profile recommendations;
-- account updates, duplicate email validation, password changes, and password reset.
+- account registration and profile updates;
+- duplicate email validation;
+- password changes and password reset;
+- custom 404 and 500 error pages.
 
 Run the complete test suite:
 
@@ -541,7 +545,6 @@ python manage.py test
 
 - Expand the cocktail and learning content;
 - Add more images for cocktails, ingredients, glassware, and equipment;
-- Improve search and filtering across the catalog;
 - Add SEO metadata and social sharing previews;
 - Introduce continuous integration for automated tests;
 - Add social authentication and profile customization;
