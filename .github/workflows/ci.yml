@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint, tests and deployment checks
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: bartender_base_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d bartender_base_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      SECRET_KEY: django-insecure-ci-only-secret-key-not-used-in-production
+      DEBUG: "True"
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/bartender_base_test
+      RESEND_API_KEY: re_fake_ci_key
+      DEFAULT_FROM_EMAIL: Bartender Base <onboarding@resend.dev>
+      CLOUDINARY_URL: cloudinary://fake_key:fake_secret@fake_cloud
+      SECURE_SSL_REDIRECT: "False"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Check migrations
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Run Ruff
+        run: ruff check .
+
+      - name: Run djLint
+        run: djlint templates --check
+
+      - name: Run tests with coverage
+        run: |
+          coverage run \
+            --source=accounts,cocktails,core,learning \
+            manage.py test
+
+      - name: Display coverage report
+        run: coverage report --show-missing --fail-under=80
+
+      - name: Run deployment checks
+        env:
+          DEBUG: "False"
+          SECURE_SSL_REDIRECT: "True"
+        run: python manage.py check --deploy
