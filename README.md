@@ -4,6 +4,7 @@
 [![Django](https://img.shields.io/badge/Django-6.1-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![CI](https://github.com/thierrydrmv/bartender-base/actions/workflows/ci.yml/badge.svg)](https://github.com/thierrydrmv/bartender-base/actions/workflows/ci.yml)
 
 **Bartender Base** is a full-stack learning platform and reference catalog for aspiring bartenders. It combines structured learning paths, practical lessons, cocktail recipes, ingredient and equipment references, personalized progress tracking, and a recipe matcher that answers a practical question: **“What can I make with the ingredients I have?”**
 
@@ -34,7 +35,8 @@ https://bartender-base.onrender.com/
 - [Code Quality](#code-quality)
 - [Tests and Coverage](#tests-and-coverage)
 - [Production and Deployment](#production-and-deployment)
-- [Security Notes](#security-notes)
+- [Continuous Integration](#continuous-integration)
+- [Security](#security)
 - [Roadmap](#roadmap)
 - [Author](#author)
 
@@ -112,7 +114,7 @@ Bartender Base was created to go beyond a conventional CRUD portfolio project. I
 - Accessible mobile menu state with `aria-expanded` and `aria-controls`;
 - Keyboard support, including closing the mobile menu with `Escape`;
 - Custom flash messages;
-- Custom 404 page;
+- Custom 404 and 500 error pages;
 - Image fallbacks for catalog items without uploaded media.
 
 ### Administration
@@ -176,12 +178,14 @@ Bartender Base currently uses Django's built-in `User` model. Personalized recor
 | Authentication | Django authentication framework |
 | Media | Cloudinary |
 | Static files | WhiteNoise |
+| Transactional email | Resend through django-anymail |
 | Application server | Gunicorn |
 | Development process manager | Honcho |
 | Hosting | Render |
 | Managed PostgreSQL | Neon |
 | Testing | Django TestCase, Coverage.py |
 | Linting and formatting | Ruff, djLint |
+| Continuous integration | GitHub Actions |
 
 ## Architecture
 
@@ -192,6 +196,7 @@ flowchart TD
     D --> N[Neon PostgreSQL]
     D --> C[Cloudinary Media]
     D --> W[WhiteNoise Static Files]
+    D --> E[Resend Email API]
 ```
 
 The application uses environment-based database configuration:
@@ -200,6 +205,7 @@ The application uses environment-based database configuration:
 - production reads a single `DATABASE_URL` connection string;
 - uploaded media is stored in Cloudinary;
 - compiled CSS, JavaScript, and Django Admin assets are collected and served through WhiteNoise.
+- transactional password-reset emails are sent through the Resend HTTP API.
 
 ## Data Model
 
@@ -224,6 +230,9 @@ The application uses environment-based database configuration:
 
 ```text
 bartender-base/
+├── .github/
+│   └── workflows/
+│       └── ci.yml        # Automated quality, test and deployment checks
 ├── accounts/              # Registration, profile and account management
 ├── cocktails/             # Catalog, recipe matcher and favorites
 ├── config/                # Django settings and root URL configuration
@@ -239,7 +248,8 @@ bartender-base/
 ├── Procfile.tailwind      # Local Django and Tailwind processes
 ├── manage.py
 ├── pyproject.toml         # Ruff and djLint configuration
-└── requirements.txt
+├── requirements.txt       # Production dependencies
+└── requirements-dev.txt   # Production and development dependencies
 ```
 
 ## Getting Started
@@ -278,7 +288,7 @@ python -m venv .venv
 
 ```bash
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
 ### 4. Create the environment file
@@ -307,7 +317,7 @@ python manage.py tailwind install
 | --- | --- | --- |
 | `SECRET_KEY` | Yes | Django cryptographic signing key |
 | `DEBUG` | Yes | Enables local debug mode; must be `False` in production |
-| `ALLOWED_HOSTS` | Local | Comma-separated local hostnames |
+| `ALLOWED_HOSTS` | Local/production | Comma-separated hostnames allowed by Django |
 | `DB_NAME` | Local | Local PostgreSQL database name |
 | `DB_USER` | Local | Local PostgreSQL role |
 | `DB_PASSWORD` | Local | Local PostgreSQL password |
@@ -315,9 +325,8 @@ python manage.py tailwind install
 | `DB_PORT` | Local | Local PostgreSQL port |
 | `DATABASE_URL` | Production | Complete managed PostgreSQL connection URL |
 | `CLOUDINARY_URL` | Production/media | Cloudinary SDK connection URL |
-| `EMAIL_HOST_USER` | Email | SMTP account username |
-| `EMAIL_HOST_PASSWORD` | Email | SMTP credential or application password |
-| `DEFAULT_FROM_EMAIL` | Optional | Default sender shown in outgoing messages |
+| `RESEND_API_KEY` | Email | API key used by django-anymail to send email through Resend |
+| `DEFAULT_FROM_EMAIL` | Email | Verified sender shown in outgoing messages |
 | `RENDER_EXTERNAL_HOSTNAME` | Render | Automatically provided hostname used by `ALLOWED_HOSTS` and CSRF configuration |
 
 Example local `.env`:
@@ -336,10 +345,11 @@ DB_PORT=5432
 DATABASE_URL=
 CLOUDINARY_URL=
 
-EMAIL_HOST_USER=
-EMAIL_HOST_PASSWORD=
-DEFAULT_FROM_EMAIL=Bartender Base <noreply@example.com>
+RESEND_API_KEY=
+DEFAULT_FROM_EMAIL=Bartender Base <onboarding@resend.dev>
 ```
+
+The Resend test sender is suitable for development and account-owner testing. To send password-reset emails to other users in production, configure a verified domain and use an address from that domain as `DEFAULT_FROM_EMAIL`.
 
 Never commit `.env`, database exports, provider credentials, or production secrets.
 
@@ -455,8 +465,8 @@ python manage.py test
 Run tests with coverage:
 
 ```bash
-coverage run manage.py test
-coverage report -m
+coverage run --source=accounts,cocktails,core,learning manage.py test
+coverage report --show-missing
 ```
 
 Generate the navigable HTML report:
@@ -511,11 +521,26 @@ DEBUG=False
 SECRET_KEY=<generated-production-secret>
 DATABASE_URL=<neon-postgresql-url>
 CLOUDINARY_URL=<cloudinary-url>
+RESEND_API_KEY=<resend-api-key>
+DEFAULT_FROM_EMAIL=Bartender Base <noreply@your-verified-domain.com>
 PYTHON_VERSION=3.14.7
 ```
 
 
 Render automatically provides the `RENDER_EXTERNAL_HOSTNAME` environment variable.
+
+## Continuous Integration
+
+GitHub Actions runs the quality pipeline on pushes and pull requests targeting `master`. The workflow:
+
+- checks for missing migrations;
+- runs Ruff;
+- checks Django templates with djLint;
+- runs the complete test suite with Coverage.py;
+- enforces a minimum coverage threshold of 80%;
+- executes `python manage.py check --deploy` with production-oriented settings.
+
+The CI job uses an isolated PostgreSQL 17 service and fake provider credentials, so it does not access production data or external services.
 
 ## Security
 
@@ -525,6 +550,7 @@ Production security settings include:
 
 - Secure session and CSRF cookies;
 - HTTPS proxy header support;
+- HTTPS redirection and HTTP Strict Transport Security (HSTS);
 - Disabled debug mode;
 - Authentication requirements for favorites and lesson progress;
 - POST-only requests for state-changing actions;
@@ -538,7 +564,9 @@ Run the following checks before deployment:
 python manage.py check --deploy
 ruff check .
 djlint templates --check
-python manage.py test
+coverage run --source=accounts,cocktails,core,learning manage.py test
+coverage report --show-missing --fail-under=80
+python manage.py check --deploy
 ```
 
 ## Roadmap
@@ -546,7 +574,6 @@ python manage.py test
 - Expand the cocktail and learning content;
 - Add more images for cocktails, ingredients, glassware, and equipment;
 - Add SEO metadata and social sharing previews;
-- Introduce continuous integration for automated tests;
 - Add social authentication and profile customization;
 - Support a custom domain.
 
