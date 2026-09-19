@@ -113,7 +113,15 @@
                 <div class="space-y-8 rounded-2xl border border-white/10 bg-zinc-900/60 p-6 lg:sticky lg:top-6">
                     <section>
                         <h2 class="font-semibold text-white">Servir em</h2>
-                        <p class="mt-2 text-zinc-400">{{ cocktail.glassware.name }}</p>
+                        {% if cocktail.glassware %}
+                            <a href="{% url 'cocktails:glassware-detail' cocktail.glassware.slug %}"
+                               class="group mt-3 flex items-center gap-2 text-zinc-400 transition hover:text-amber-400">
+                                <span class="text-amber-400" aria-hidden="true"></span>
+                                <span>{{ cocktail.glassware.name }}</span>
+                            </a>
+                        {% else %}
+                            <p class="mt-2 text-sm text-zinc-500">Nenhum copo cadastrado.</p>
+                        {% endif %}
                     </section>
                     <section>
                         <h2 class="font-semibold text-white">Técnicas</h2>
