@@ -798,3 +798,297 @@ class CatalogListViewTests(TestCase):
             response.context["missing_many_cocktails"],
             [],
         )
+
+
+class GlasswareListTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.coupe = Glassware.objects.create(
+            name="Taça coupe",
+            slug="taca-coupe",
+            description="Taça de haste com bojo largo e raso.",
+        )
+
+        cls.highball = Glassware.objects.create(
+            name="Copo highball",
+            slug="copo-highball",
+            description="Copo alto utilizado em drinks refrescantes.",
+        )
+
+        cls.old_fashioned = Glassware.objects.create(
+            name="Copo old fashioned",
+            slug="copo-old-fashioned",
+            description="Copo baixo e resistente.",
+        )
+
+    def test_glassware_list_returns_success(self):
+        response = self.client.get(
+            reverse("cocktails:glassware-list"),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "cocktails/glassware_list.html",
+        )
+
+    def test_glassware_list_displays_glassware(self):
+        response = self.client.get(
+            reverse("cocktails:glassware-list"),
+        )
+
+        self.assertContains(response, self.coupe.name)
+        self.assertContains(response, self.highball.name)
+        self.assertContains(response, self.old_fashioned.name)
+
+    def test_glassware_are_ordered_by_name(self):
+        response = self.client.get(
+            reverse("cocktails:glassware-list"),
+        )
+
+        glassware = list(response.context["page"].object_list)
+
+        self.assertEqual(
+            glassware,
+            [
+                self.highball,
+                self.old_fashioned,
+                self.coupe,
+            ],
+        )
+
+    def test_search_filters_glassware_by_name(self):
+        response = self.client.get(
+            reverse("cocktails:glassware-list"),
+            {"q": "highball"},
+        )
+
+        page = response.context["page"]
+
+        self.assertEqual(list(page.object_list), [self.highball])
+        self.assertContains(response, self.highball.name)
+        self.assertNotContains(response, self.coupe.name)
+
+    def test_search_filters_glassware_by_description(self):
+        response = self.client.get(
+            reverse("cocktails:glassware-list"),
+            {"q": "raso"},
+        )
+
+        page = response.context["page"]
+
+        self.assertEqual(list(page.object_list), [self.coupe])
+
+    def test_search_is_case_insensitive(self):
+        response = self.client.get(
+            reverse("cocktails:glassware-list"),
+            {"q": "HIGHBALL"},
+        )
+
+        page = response.context["page"]
+
+        self.assertEqual(list(page.object_list), [self.highball])
+
+    def test_search_removes_surrounding_whitespace(self):
+        response = self.client.get(
+            reverse("cocktails:glassware-list"),
+            {"q": "  highball  "},
+        )
+
+        self.assertEqual(
+            response.context["query"],
+            "highball",
+        )
+        self.assertEqual(
+            list(response.context["page"].object_list),
+            [self.highball],
+        )
+
+    def test_search_with_no_match_returns_empty_page(self):
+        response = self.client.get(
+            reverse("cocktails:glassware-list"),
+            {"q": "inexistente"},
+        )
+
+        self.assertEqual(
+            list(response.context["page"].object_list),
+            [],
+        )
+        self.assertContains(
+            response,
+            "Nenhum copo encontrado.",
+        )
+
+    def test_glassware_list_paginates_nine_items(self):
+        Glassware.objects.bulk_create(
+            [
+                Glassware(
+                    name=f"Copo {number:02}",
+                    slug=f"copo-{number:02}",
+                    description="Descrição do copo.",
+                )
+                for number in range(10)
+            ]
+        )
+
+        response = self.client.get(
+            reverse("cocktails:glassware-list"),
+        )
+
+        page = response.context["page"]
+
+        self.assertEqual(len(page.object_list), 9)
+        self.assertTrue(page.has_next())
+
+    def test_glassware_list_returns_second_page(self):
+        Glassware.objects.bulk_create(
+            [
+                Glassware(
+                    name=f"Copo {number:02}",
+                    slug=f"copo-{number:02}",
+                    description="Descrição do copo.",
+                )
+                for number in range(10)
+            ]
+        )
+
+        response = self.client.get(
+            reverse("cocktails:glassware-list"),
+            {"page": 2},
+        )
+
+        page = response.context["page"]
+
+        self.assertEqual(page.number, 2)
+        self.assertTrue(page.has_previous())
+
+
+class GlasswareDetailTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.glassware = Glassware.objects.create(
+            name="Taça coupe",
+            slug="taca-coupe",
+            description="Taça de haste com bojo largo e raso.",
+        )
+
+        cls.other_glassware = Glassware.objects.create(
+            name="Copo highball",
+            slug="copo-highball",
+            description="Copo alto utilizado em long drinks.",
+        )
+
+        cls.published_cocktail = Cocktail.objects.create(
+            name="Daiquiri",
+            slug="daiquiri",
+            description="Cocktail clássico preparado com rum.",
+            instructions="Bata os ingredientes com gelo.",
+            difficulty="easy",
+            preparation_time=5,
+            glassware=cls.glassware,
+            is_published=True,
+        )
+
+        cls.unpublished_cocktail = Cocktail.objects.create(
+            name="Cocktail não publicado",
+            slug="cocktail-nao-publicado",
+            description="Receita ainda não publicada.",
+            instructions="Misture os ingredientes.",
+            difficulty="easy",
+            preparation_time=5,
+            glassware=cls.glassware,
+            is_published=False,
+        )
+
+        cls.other_cocktail = Cocktail.objects.create(
+            name="Gin Tônica",
+            slug="gin-tonica",
+            description="Cocktail servido em outro copo.",
+            instructions="Monte diretamente no copo.",
+            difficulty="easy",
+            preparation_time=5,
+            glassware=cls.other_glassware,
+            is_published=True,
+        )
+
+    def test_glassware_detail_returns_success(self):
+        response = self.client.get(
+            reverse(
+                "cocktails:glassware-detail",
+                args=[self.glassware.slug],
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "cocktails/glassware_detail.html",
+        )
+
+    def test_glassware_detail_adds_glassware_to_context(self):
+        response = self.client.get(
+            reverse(
+                "cocktails:glassware-detail",
+                args=[self.glassware.slug],
+            )
+        )
+
+        self.assertEqual(
+            response.context["glassware"],
+            self.glassware,
+        )
+
+    def test_glassware_detail_displays_published_cocktails(self):
+        response = self.client.get(
+            reverse(
+                "cocktails:glassware-detail",
+                args=[self.glassware.slug],
+            )
+        )
+
+        cocktails = list(response.context["cocktails"])
+
+        self.assertEqual(
+            cocktails,
+            [self.published_cocktail],
+        )
+        self.assertContains(
+            response,
+            self.published_cocktail.name,
+        )
+
+    def test_glassware_detail_excludes_unpublished_cocktails(self):
+        response = self.client.get(
+            reverse(
+                "cocktails:glassware-detail",
+                args=[self.glassware.slug],
+            )
+        )
+
+        self.assertNotContains(
+            response,
+            self.unpublished_cocktail.name,
+        )
+
+    def test_glassware_detail_excludes_cocktails_from_other_glassware(self):
+        response = self.client.get(
+            reverse(
+                "cocktails:glassware-detail",
+                args=[self.glassware.slug],
+            )
+        )
+
+        self.assertNotContains(
+            response,
+            self.other_cocktail.name,
+        )
+
+    def test_glassware_detail_returns_404_for_unknown_slug(self):
+        response = self.client.get(
+            reverse(
+                "cocktails:glassware-detail",
+                args=["copo-inexistente"],
+            )
+        )
+
+        self.assertEqual(response.status_code, 404)

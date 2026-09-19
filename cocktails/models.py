@@ -112,6 +112,12 @@ class Glassware(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse(
+            "cocktails:glassware-detail",
+            kwargs={"slug": self.slug},
+        )
+
 
 class Cocktail(models.Model):
     class Difficulty(models.TextChoices):

@@ -42,6 +42,16 @@ urlpatterns = [
         name="technique-detail",
     ),
     path(
+        "glassware/",
+        views.glassware_list,
+        name="glassware-list",
+    ),
+    path(
+        "glassware/<slug:slug>/",
+        views.glassware_detail,
+        name="glassware-detail",
+    ),
+    path(
         "<slug:slug>/favorite/",
         views.toggle_favorite,
         name="toggle-favorite",

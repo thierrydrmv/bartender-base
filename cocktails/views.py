@@ -11,6 +11,7 @@ from .models import (
     CocktailIngredient,
     Equipment,
     Favorite,
+    Glassware,
     Ingredient,
     IngredientCategory,
     Technique,
@@ -390,4 +391,54 @@ def toggle_favorite(request, slug):
 
     return redirect(
         cocktail.get_absolute_url(),
+    )
+
+
+def glassware_list(request):
+    query = request.GET.get("q", "").strip()
+
+    glassware = Glassware.objects.all().order_by("name")
+
+    if query:
+        glassware = glassware.filter(Q(name__icontains=query) | Q(description__icontains=query))
+
+    paginator = Paginator(glassware, 9)
+    page = paginator.get_page(request.GET.get("page"))
+
+    context = {
+        "page": page,
+        "query": query,
+    }
+
+    return render(
+        request,
+        "cocktails/glassware_list.html",
+        context,
+    )
+
+
+def glassware_detail(request, slug):
+    glassware = get_object_or_404(
+        Glassware,
+        slug=slug,
+    )
+
+    cocktails = (
+        Cocktail.objects.filter(
+            glassware=glassware,
+            is_published=True,
+        )
+        .select_related("glassware")
+        .order_by("name")
+    )
+
+    context = {
+        "glassware": glassware,
+        "cocktails": cocktails,
+    }
+
+    return render(
+        request,
+        "cocktails/glassware_detail.html",
+        context,
     )
