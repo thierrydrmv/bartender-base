@@ -108,6 +108,10 @@
                class="rounded-lg px-3 py-3 text-zinc-300 hover:bg-white/5 hover:text-amber-400">
                 Equipamentos
             </a>
+            <a href="{% url 'cocktails:glassware-list' %}"
+               class="rounded-lg px-3 py-3 text-zinc-300 hover:bg-white/5 hover:text-amber-400">
+                Copos
+            </a>
             <div class="my-3 border-t border-white/10"></div>
             {% if user.is_authenticated %}
                 <a href="{% url 'accounts:profile' %}"
