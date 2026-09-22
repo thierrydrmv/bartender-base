@@ -40,7 +40,31 @@ render_hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME")
 if render_hostname:
     ALLOWED_HOSTS.append(render_hostname)
 
-CSRF_TRUSTED_ORIGINS = []
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "CSRF_TRUSTED_ORIGINS",
+        "",
+    ).split(",")
+    if origin.strip()
+]
+
+platform_hostnames = [
+    os.getenv("RENDER_EXTERNAL_HOSTNAME"),
+    os.getenv("RAILWAY_PUBLIC_DOMAIN"),
+]
+
+for hostname in platform_hostnames:
+    if not hostname:
+        continue
+
+    if hostname not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(hostname)
+
+    origin = f"https://{hostname}"
+
+    if origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(origin)
 
 if render_hostname:
     CSRF_TRUSTED_ORIGINS.append(f"https://{render_hostname}")
