@@ -12,7 +12,7 @@ The interface and educational content are currently written in Brazilian Portugu
 
 ## Live Demo
 
-https://bartender-base.onrender.com/
+https://bartender-base-production.up.railway.app/
 
 > When using Render's free tier, the first request after a period of inactivity may take approximately one minute while the service wakes up.
 
