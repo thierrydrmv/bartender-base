@@ -179,7 +179,7 @@ Bartender Base currently uses Django's built-in `User` model. Personalized recor
 | Transactional email | Resend through django-anymail |
 | Application server | Gunicorn |
 | Development process manager | Honcho |
-| Hosting | Render |
+| Hosting | Railway |
 | Managed PostgreSQL | Neon |
 | Testing | Django TestCase, Coverage.py |
 | Linting and formatting | Ruff, djLint |
@@ -189,7 +189,7 @@ Bartender Base currently uses Django's built-in `User` model. Personalized recor
 
 ```mermaid
 flowchart TD
-    U[Browser] --> R[Render]
+    U[Browser] --> R[Railway]
     R --> D[Django and Gunicorn]
     D --> N[Neon PostgreSQL]
     D --> C[Cloudinary Media]
@@ -325,7 +325,7 @@ python manage.py tailwind install
 | `CLOUDINARY_URL` | Production/media | Cloudinary SDK connection URL |
 | `RESEND_API_KEY` | Email | API key used by django-anymail to send email through Resend |
 | `DEFAULT_FROM_EMAIL` | Email | Verified sender shown in outgoing messages |
-| `RENDER_EXTERNAL_HOSTNAME` | Render | Automatically provided hostname used by `ALLOWED_HOSTS` and CSRF configuration |
+| `RAILWAY_PUBLIC_DOMAIN` | Railway | Automatically provided hostname used by `ALLOWED_HOSTS` and CSRF configuration |
 
 Example local `.env`:
 
@@ -484,7 +484,7 @@ xdg-open htmlcov/index.html
 
 The current deployment architecture uses:
 
-- **Render** for the Django web service;
+- **Railway** for the Django web service;
 - **Neon** for persistent PostgreSQL data;
 - **Cloudinary** for persistent uploaded media;
 - **WhiteNoise** for collected static assets;
@@ -500,13 +500,13 @@ python manage.py collectstatic --noinput
 python manage.py migrate
 ```
 
-Render build command:
+Railway build command:
 
 ```bash
 ./build.sh
 ```
 
-Render start command:
+Railway start command:
 
 ```bash
 gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
@@ -525,7 +525,7 @@ PYTHON_VERSION=3.14.7
 ```
 
 
-Render automatically provides the `RENDER_EXTERNAL_HOSTNAME` environment variable.
+Railway automatically provides the `RAILWAY_PUBLIC_DOMAIN` environment variable.
 
 ## Continuous Integration
 
