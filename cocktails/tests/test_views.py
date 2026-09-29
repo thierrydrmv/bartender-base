@@ -198,37 +198,48 @@ class CocktailViewTests(TestCase):
 class CocktailMatcherTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.category = IngredientCategory.objects.create(
-            name="Ingredientes do matcher",
-            slug="ingredientes-do-matcher",
-            description="Categoria utilizada nos testes.",
+        cls.spirits_category = IngredientCategory.objects.create(
+            name="Destilados",
+            slug="destilados",
+        )
+        cls.fruit_category = IngredientCategory.objects.create(
+            name="Frutas e sucos",
+            slug="frutas-e-sucos",
+        )
+        cls.syrup_category = IngredientCategory.objects.create(
+            name="Xaropes e açúcares",
+            slug="xaropes-e-acucares",
+        )
+        cls.herb_category = IngredientCategory.objects.create(
+            name="Ervas e especiarias",
+            slug="ervas-e-especiarias",
         )
 
         cls.rum = Ingredient.objects.create(
             name="Rum de teste",
             slug="rum-de-teste",
-            category=cls.category,
+            category=cls.spirits_category,
             is_alcoholic=True,
         )
 
         cls.lime = Ingredient.objects.create(
             name="Limão de teste",
             slug="limao-de-teste",
-            category=cls.category,
+            category=cls.fruit_category,
             is_alcoholic=False,
         )
 
         cls.syrup = Ingredient.objects.create(
             name="Xarope de teste",
             slug="xarope-de-teste",
-            category=cls.category,
+            category=cls.syrup_category,
             is_alcoholic=False,
         )
 
         cls.mint = Ingredient.objects.create(
             name="Hortelã de teste",
             slug="hortela-de-teste",
-            category=cls.category,
+            category=cls.herb_category,
             is_alcoholic=False,
         )
 
@@ -316,11 +327,17 @@ class CocktailMatcherTests(TestCase):
         response = self.client.get(
             reverse("cocktails:matcher"),
         )
+        self.assertEqual(response.status_code, 200)
+        ingredients = [
+            self.rum,
+            self.lime,
+            self.syrup,
+            self.mint,
+        ]
 
-        self.assertContains(response, self.rum.name)
-        self.assertContains(response, self.lime.name)
-        self.assertContains(response, self.syrup.name)
-        self.assertContains(response, self.mint.name)
+        for ingredient in ingredients:
+            with self.subTest(ingredient=ingredient.name):
+                self.assertContains(response, ingredient.name)
 
     def test_no_selection_does_not_calculate_results(self):
         response = self.client.get(
