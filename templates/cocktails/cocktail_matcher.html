@@ -17,29 +17,78 @@
         <form action="{% url 'cocktails:matcher' %}#results" method="get">
             {% regroup ingredients by category as ingredient_groups %}
             <div class="space-y-10">
-                {% for group in ingredient_groups %}
-                    <fieldset>
-                        <legend class="text-xl font-semibold">{{ group.grouper.name }}</legend>
-                        {% if group.grouper.description %}
-                            <p class="mt-2 text-sm text-zinc-500">{{ group.grouper.description }}</p>
-                        {% endif %}
-                        <div class="mt-5 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                            {% for ingredient in group.list %}
-                                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-zinc-900 p-4 transition has-checked:border-amber-500 has-checked:bg-amber-500/10 hover:border-white/30">
-                                    <input type="checkbox"
-                                           name="ingredients"
-                                           value="{{ ingredient.id }}"
-                                           {% if ingredient.id in selected_ids %}checked{% endif %}
-                                           class="size-4 cursor-pointer accent-amber-500">
-                                    <span class="flex-1 text-sm font-medium">{{ ingredient.name }}</span>
-                                    {% if ingredient.is_alcoholic %}
-                                        <span class="text-xs text-zinc-500">Alcoólico</span>
-                                    {% endif %}
-                                </label>
-                            {% endfor %}
-                        </div>
-                    </fieldset>
-                {% endfor %}
+                <fieldset class="rounded-3xl border border-white/10 bg-zinc-900/40 p-6 sm:p-8">
+                    <legend class="px-3 text-2xl font-semibold text-amber-400">Garrafas</legend>
+                    <p class="text-sm leading-6 text-zinc-400">
+                        Comece pelas bases da bebida: destilados, licores, aperitivos,
+                        vinhos e espumantes.
+                    </p>
+                    <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {% for group in ingredient_groups %}
+                            {% if group.grouper.slug == "destilados" or group.grouper.slug == "licores-e-aperitivos" or group.grouper.slug == "vinhos-e-espumantes" %}
+                                {% for ingredient in group.list %}
+                                    <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-zinc-900 p-4 transition has-checked:border-amber-500 has-checked:bg-amber-500/10 hover:border-white/30">
+                                        <input type="checkbox"
+                                               name="ingredients"
+                                               value="{{ ingredient.id }}"
+                                               {% if ingredient.id in selected_ids %}checked{% endif %}
+                                               class="size-4 cursor-pointer accent-amber-500">
+                                        <span class="min-w-0 flex-1 text-sm font-medium">{{ ingredient.name }}</span>
+                                        <span class="text-right text-xs text-zinc-500">{{ ingredient.category.name }}</span>
+                                    </label>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </fieldset>
+                <fieldset class="rounded-3xl border border-white/10 bg-zinc-900/40 p-6 sm:p-8">
+                    <legend class="px-3 text-2xl font-semibold text-amber-400">Complementos</legend>
+                    <p class="text-sm leading-6 text-zinc-400">
+                        Adicione frutas, sucos, xaropes, açúcares, refrigerantes
+                        e outros ingredientes.
+                    </p>
+                    <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {% for group in ingredient_groups %}
+                            {% if group.grouper.slug == "frutas-e-sucos" or group.grouper.slug == "misturadores" or group.grouper.slug == "xaropes-e-acucares" or group.grouper.slug == "outros" %}
+                                {% for ingredient in group.list %}
+                                    <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-zinc-900 p-4 transition has-checked:border-amber-500 has-checked:bg-amber-500/10 hover:border-white/30">
+                                        <input type="checkbox"
+                                               name="ingredients"
+                                               value="{{ ingredient.id }}"
+                                               {% if ingredient.id in selected_ids %}checked{% endif %}
+                                               class="size-4 cursor-pointer accent-amber-500">
+                                        <span class="min-w-0 flex-1 text-sm font-medium">{{ ingredient.name }}</span>
+                                        <span class="text-right text-xs text-zinc-500">{{ ingredient.category.name }}</span>
+                                    </label>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </fieldset>
+                <fieldset class="rounded-3xl border border-white/10 bg-zinc-900/40 p-6 sm:p-8">
+                    <legend class="px-3 text-2xl font-semibold text-amber-400">Finalização</legend>
+                    <p class="text-sm leading-6 text-zinc-400">
+                        Complete o drink com ervas, especiarias, bitters
+                        e ingredientes usados para dar acabamento.
+                    </p>
+                    <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {% for group in ingredient_groups %}
+                            {% if group.grouper.slug == "ervas-e-especiarias" or group.grouper.slug == "bitters" %}
+                                {% for ingredient in group.list %}
+                                    <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-zinc-900 p-4 transition has-checked:border-amber-500 has-checked:bg-amber-500/10 hover:border-white/30">
+                                        <input type="checkbox"
+                                               name="ingredients"
+                                               value="{{ ingredient.id }}"
+                                               {% if ingredient.id in selected_ids %}checked{% endif %}
+                                               class="size-4 cursor-pointer accent-amber-500">
+                                        <span class="min-w-0 flex-1 text-sm font-medium">{{ ingredient.name }}</span>
+                                        <span class="text-right text-xs text-zinc-500">{{ ingredient.category.name }}</span>
+                                    </label>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </fieldset>
             </div>
             <div class="sticky bottom-4 z-10 mt-12 flex flex-col gap-3 rounded-2xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur sm:flex-row sm:items-center sm:justify-between">
                 <p class="text-sm text-zinc-400">Selecione tudo que está disponível no seu bar.</p>
@@ -103,8 +152,7 @@
                     {% else %}
                         <div class="mt-6 rounded-2xl border border-dashed border-white/15 p-8 text-center">
                             <p class="text-zinc-400">
-                                Você ainda não possui todos os ingredientes
-                                obrigatórios de uma receita.
+                                Você ainda não possui todos os ingredientes obrigatórios de uma receita.
                             </p>
                         </div>
                     {% endif %}
