@@ -14,9 +14,8 @@ def home(request):
         "Limão",
         "Vodka",
         "Hortelã",
-        "Aperol",
+        "Açúcar",
         "Cachaça",
-        "Angostura bitters",
     ]
 
     featured_ingredients = Ingredient.objects.filter(
