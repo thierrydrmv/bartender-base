@@ -10,16 +10,16 @@ def home(request):
         .prefetch_related("techniques")
         .order_by("-created_at")[:6]
     )
-    featured_names = [
-        "Limão",
-        "Vodka",
-        "Hortelã",
-        "Açúcar",
-        "Cachaça",
+    featured_slugs = [
+        "limao-taiti",
+        "vodka",
+        "hortela",
+        "acucar",
+        "cachaca",
     ]
 
     featured_ingredients = Ingredient.objects.filter(
-        name__in=featured_names,
+        slug__in=featured_slugs,
     )
 
     context = {
