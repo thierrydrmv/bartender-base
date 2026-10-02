@@ -56,6 +56,13 @@ class Technique(models.Model):
     description = models.TextField()
     instructions = models.TextField(blank=True)
 
+    equipment = models.ManyToManyField(
+        "Equipment",
+        through="TechniqueEquipment",
+        related_name="techniques",
+        blank=True,
+    )
+
     class Meta:
         ordering = ["name"]
         verbose_name = "técnica"
@@ -93,6 +100,43 @@ class Equipment(models.Model):
             "cocktails:equipment-detail",
             kwargs={"slug": self.slug},
         )
+
+
+class TechniqueEquipment(models.Model):
+    technique = models.ForeignKey(
+        Technique,
+        on_delete=models.CASCADE,
+        related_name="equipment_items",
+    )
+    equipment = models.ForeignKey(
+        Equipment,
+        on_delete=models.PROTECT,
+        related_name="technique_items",
+    )
+    is_required = models.BooleanField(
+        default=True,
+        verbose_name="obrigatório",
+    )
+    notes = models.CharField(
+        max_length=150,
+        blank=True,
+        help_text="Informações adicionais sobre o uso do equipamento.",
+    )
+    order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+        verbose_name = "equipamento da técnica"
+        verbose_name_plural = "equipamentos da técnica"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["technique", "equipment"],
+                name="unique_equipment_per_technique",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.technique} — {self.equipment}"
 
 
 class Glassware(models.Model):

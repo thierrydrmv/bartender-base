@@ -28,6 +28,39 @@
                 </div>
             </section>
         {% endif %}
+        <section class="mx-auto max-w-6xl px-6 pt-16">
+            <p class="font-medium text-amber-400">Ferramentas necessárias</p>
+            <h2 class="mt-2 text-3xl font-bold">Equipamentos utilizados nesta técnica</h2>
+            {% with equipment=technique.equipment.all %}
+                {% if equipment %}
+                    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {% for item in equipment %}
+                            <article class="group overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 transition hover:border-amber-500/50">
+                                <a href="{{ item.get_absolute_url }}" class="block">
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}"
+                                             alt="{{ item.name }}"
+                                             class="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                    {% else %}
+                                        <div class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-amber-500/20 to-zinc-900">
+                                            <span class="text-6xl" aria-hidden="true">🧰</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="p-5">
+                                        <h3 class="font-semibold transition group-hover:text-amber-400">{{ item.name }}</h3>
+                                        <p class="mt-2 text-sm text-amber-400">Conhecer equipamento →</p>
+                                    </div>
+                                </a>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="mt-8 rounded-2xl border border-dashed border-white/15 px-6 py-12 text-center">
+                        <p class="text-zinc-500">Nenhum equipamento foi associado a esta técnica.</p>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </section>
         <section class="mx-auto max-w-6xl px-6 py-16">
             <p class="font-medium text-amber-400">Pratique</p>
             <h2 class="mt-2 text-3xl font-bold">Drinks que utilizam esta técnica</h2>
@@ -46,7 +79,7 @@
                                     </div>
                                 {% endif %}
                                 <div class="p-5">
-                                    <h3 class="font-semibold">{{ cocktail.name }}</h3>
+                                    <h3 class="font-semibold transition group-hover:text-amber-400">{{ cocktail.name }}</h3>
                                     <p class="mt-2 text-sm text-amber-400">Ver receita →</p>
                                 </div>
                             </a>

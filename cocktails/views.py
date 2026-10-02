@@ -167,13 +167,19 @@ def technique_list(request):
 
 def technique_detail(request, slug):
     technique = get_object_or_404(
-        Technique.objects.prefetch_related("cocktails"),
+        Technique.objects.prefetch_related(
+            "equipment",
+        ),
         slug=slug,
     )
 
-    cocktails = Cocktail.objects.filter(
-        techniques=technique,
-        is_published=True,
+    cocktails = (
+        Cocktail.objects.filter(
+            techniques=technique,
+            is_published=True,
+        )
+        .select_related("glassware")
+        .order_by("name")
     )
 
     context = {

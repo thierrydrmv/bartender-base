@@ -9,6 +9,7 @@ from .models import (
     Ingredient,
     IngredientCategory,
     Technique,
+    TechniqueEquipment,
 )
 
 
@@ -52,10 +53,34 @@ class IngredientCategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
 
 
+class TechniqueEquipmentInline(admin.TabularInline):
+    model = TechniqueEquipment
+    extra = 1
+    fields = (
+        "equipment",
+        "is_required",
+        "notes",
+        "order",
+    )
+    ordering = ("order",)
+
+
 @admin.register(Technique)
 class TechniqueAdmin(admin.ModelAdmin):
-    search_fields = ("name",)
-    prepopulated_fields = {"slug": ("name",)}
+    list_display = (
+        "name",
+        "slug",
+    )
+    search_fields = (
+        "name",
+        "description",
+    )
+    prepopulated_fields = {
+        "slug": ("name",),
+    }
+    inlines = [
+        TechniqueEquipmentInline,
+    ]
 
 
 @admin.register(Equipment)
